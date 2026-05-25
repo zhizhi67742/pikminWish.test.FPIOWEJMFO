@@ -2217,3 +2217,32 @@ function updateCurrentNicknameBar() {
 
 window.updateCurrentNicknameBar = updateCurrentNicknameBar;
 
+
+
+/* ===== FORCE JS FIX: move nickname badge below title ===== */
+(function () {
+  function moveNicknameBarBelowTitle() {
+    const bar = document.getElementById("currentNicknameBar") ||
+      document.querySelector(".current-nickname-bar, .nickname-status, .nickname-pill");
+    const title = document.querySelector(".hero-title, .main-title, .site-title, .hero h1, h1");
+    if (!bar || !title) return;
+
+    bar.style.position = "relative";
+    bar.style.left = "auto";
+    bar.style.right = "auto";
+    bar.style.top = "auto";
+    bar.style.bottom = "auto";
+    bar.style.transform = "none";
+    bar.style.margin = "16px auto 0";
+    bar.style.zIndex = "1";
+
+    if (title.nextElementSibling !== bar) {
+      title.insertAdjacentElement("afterend", bar);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", moveNicknameBarBelowTitle);
+  window.addEventListener("load", moveNicknameBarBelowTitle);
+  setTimeout(moveNicknameBarBelowTitle, 300);
+})();
+

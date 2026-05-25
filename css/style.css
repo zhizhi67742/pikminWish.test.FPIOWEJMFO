@@ -3266,3 +3266,77 @@ h1 {
   }
 }
 
+
+
+/* ===== FORCE FIX: 目前暱稱固定在標題下方，不覆蓋大標 ===== */
+#currentNicknameBar,
+.current-nickname-bar,
+.currentNicknameBar,
+.nickname-status,
+.nickname-pill {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  translate: none !important;
+  float: none !important;
+  clear: both !important;
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: calc(100vw - 32px) !important;
+  margin: 16px auto 0 auto !important;
+  z-index: 1 !important;
+}
+
+.hero,
+.hero-section,
+.hero-content,
+.hero-inner,
+.header-content,
+.main-hero,
+.landing-hero {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.hero h1,
+.hero-title,
+.main-title,
+.site-title,
+h1 {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  margin-bottom: 0 !important;
+  z-index: 2 !important;
+}
+
+#currentNicknameBar {
+  order: 3 !important;
+}
+
+@media (min-width: 769px) {
+  #currentNicknameBar,
+  .current-nickname-bar,
+  .currentNicknameBar,
+  .nickname-status,
+  .nickname-pill {
+    margin-top: 18px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #currentNicknameBar,
+  .current-nickname-bar,
+  .currentNicknameBar,
+  .nickname-status,
+  .nickname-pill {
+    margin-top: 12px !important;
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+  }
+}
+
