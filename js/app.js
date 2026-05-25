@@ -1966,26 +1966,17 @@ document.addEventListener("DOMContentLoaded", initCollapseBlocks);
 
 
 /* ===== 回到頂部按鈕 ===== */
-window.addEventListener("load", function(){
+function initBackToTopBtn() {
   const btn = document.getElementById("backToTopBtn");
-  if(!btn) return;
+  if (!btn || btn.dataset.ready === "1") return;
 
-  function toggleTopBtn(){
-    if(window.scrollY > 260){
-      btn.classList.add("show");
-    }else{
-      btn.classList.remove("show");
-    }
-  }
-
-  window.addEventListener("scroll", toggleTopBtn);
-
-  btn.addEventListener("click", function(){
-    window.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
+  btn.dataset.ready = "1";
+  btn.addEventListener("click", function () {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+    document.body.scrollTo({ top: 0, behavior: "smooth" });
   });
+}
 
-  toggleTopBtn();
-});
+document.addEventListener("DOMContentLoaded", initBackToTopBtn);
+window.addEventListener("load", initBackToTopBtn);
