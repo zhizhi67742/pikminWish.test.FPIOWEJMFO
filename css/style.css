@@ -3551,3 +3551,63 @@ h1 {
     padding: 8px 6px;
   }
 }
+
+
+/* === 手機板：許願區＆待完成區 訂單選項並排修正版 === */
+@media (max-width: 768px) {
+  #wishListSection .order-filter-tabs,
+  #acceptedListSection .order-filter-tabs,
+  #wishSection .order-filter-tabs,
+  #pendingSection .order-filter-tabs,
+  #wishListSection .filter-tabs,
+  #acceptedListSection .filter-tabs,
+  #wishSection .filter-tabs,
+  #pendingSection .filter-tabs,
+  .wish-section .order-filter-tabs,
+  .accepted-section .order-filter-tabs,
+  .wish-section .filter-tabs,
+  .accepted-section .filter-tabs,
+  .order-filter-tabs,
+  .order-filter-group {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 10px 0 14px !important;
+  }
+
+  #wishListSection .order-filter-tabs button,
+  #acceptedListSection .order-filter-tabs button,
+  #wishSection .order-filter-tabs button,
+  #pendingSection .order-filter-tabs button,
+  #wishListSection .filter-tabs button,
+  #acceptedListSection .filter-tabs button,
+  #wishSection .filter-tabs button,
+  #pendingSection .filter-tabs button,
+  .wish-section .order-filter-tabs button,
+  .accepted-section .order-filter-tabs button,
+  .wish-section .filter-tabs button,
+  .accepted-section .filter-tabs button,
+  .order-filter-tabs button,
+  .order-filter-group button,
+  .order-filter-btn {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    padding: 8px 6px !important;
+    box-sizing: border-box !important;
+  }
+}
+
