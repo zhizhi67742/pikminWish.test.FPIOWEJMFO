@@ -58,6 +58,51 @@
       color:rgba(245,247,244,.55);
     }
 
+
+.harvest-quick-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:12px 0 14px;
+}
+
+.harvest-tag-btn,
+.harvest-tag-clear{
+  border:none;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:14px;
+  cursor:pointer;
+  transition:0.2s ease;
+  background:rgba(255,255,255,0.08);
+  color:#f5f5f5;
+}
+
+.harvest-tag-btn:hover,
+.harvest-tag-clear:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,0.14);
+}
+
+.harvest-tag-btn.active{
+  background:#c9df7a;
+  color:#1f3316;
+  font-weight:700;
+}
+
+.harvest-tag-clear{
+  background:rgba(255,180,180,0.16);
+  color:#ffd6d6;
+}
+
+@media (max-width: 768px){
+  .harvest-tag-btn,
+  .harvest-tag-clear{
+    font-size:13px;
+    padding:7px 12px;
+  }
+}
+
 </style>
 
 <style>
@@ -134,6 +179,51 @@ h1 {
   }
 }
 
+
+.harvest-quick-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:12px 0 14px;
+}
+
+.harvest-tag-btn,
+.harvest-tag-clear{
+  border:none;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:14px;
+  cursor:pointer;
+  transition:0.2s ease;
+  background:rgba(255,255,255,0.08);
+  color:#f5f5f5;
+}
+
+.harvest-tag-btn:hover,
+.harvest-tag-clear:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,0.14);
+}
+
+.harvest-tag-btn.active{
+  background:#c9df7a;
+  color:#1f3316;
+  font-weight:700;
+}
+
+.harvest-tag-clear{
+  background:rgba(255,180,180,0.16);
+  color:#ffd6d6;
+}
+
+@media (max-width: 768px){
+  .harvest-tag-btn,
+  .harvest-tag-clear{
+    font-size:13px;
+    padding:7px 12px;
+  }
+}
+
 </style>
 
 <style>
@@ -166,6 +256,51 @@ h1 {
 /* 避免 wrapper 變成額外方塊 */
 #nicknameGate .gate-platform-wrap {
   display: contents !important;
+}
+
+
+.harvest-quick-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:12px 0 14px;
+}
+
+.harvest-tag-btn,
+.harvest-tag-clear{
+  border:none;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:14px;
+  cursor:pointer;
+  transition:0.2s ease;
+  background:rgba(255,255,255,0.08);
+  color:#f5f5f5;
+}
+
+.harvest-tag-btn:hover,
+.harvest-tag-clear:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,0.14);
+}
+
+.harvest-tag-btn.active{
+  background:#c9df7a;
+  color:#1f3316;
+  font-weight:700;
+}
+
+.harvest-tag-clear{
+  background:rgba(255,180,180,0.16);
+  color:#ffd6d6;
+}
+
+@media (max-width: 768px){
+  .harvest-tag-btn,
+  .harvest-tag-clear{
+    font-size:13px;
+    padding:7px 12px;
+  }
 }
 
 </style>
@@ -486,6 +621,16 @@ h1 {
         type="text"
         placeholder="採收資訊，例如：印度、8朵、首花時間、隨意收"
       />
+
+
+      <div class="harvest-quick-tags">
+        <button type="button" class="harvest-tag-btn" data-tag="白花/櫻花收">白花/櫻花收</button>
+        <button type="button" class="harvest-tag-btn" data-tag="隨意收">隨意收</button>
+        <button type="button" class="harvest-tag-btn" data-tag="偷田是乞丐">偷田是乞丐</button>
+        <button type="button" class="harvest-tag-btn" data-tag="勿分享">勿分享</button>
+        <button type="button" class="harvest-tag-btn" data-tag="座標已偏移">座標已偏移</button>
+        <button type="button" class="harvest-tag-clear">清空</button>
+      </div>
 
       <textarea
         id="shareLocationInput"
@@ -847,5 +992,53 @@ h1 {
 })();
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const harvestInput = document.getElementById("harvestInfoInput");
+  const tagButtons = document.querySelectorAll(".harvest-tag-btn");
+  const clearButton = document.querySelector(".harvest-tag-clear");
+
+  function getCurrentTags() {
+    return harvestInput.value
+      .split("、")
+      .map(tag => tag.trim())
+      .filter(Boolean);
+  }
+
+  function syncButtonStates() {
+    const currentTags = getCurrentTags();
+
+    tagButtons.forEach(btn => {
+      const tag = btn.dataset.tag;
+      btn.classList.toggle("active", currentTags.includes(tag));
+    });
+  }
+
+  tagButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tag = btn.dataset.tag;
+      let currentTags = getCurrentTags();
+
+      if (currentTags.includes(tag)) {
+        currentTags = currentTags.filter(t => t !== tag);
+      } else {
+        currentTags.push(tag);
+      }
+
+      harvestInput.value = currentTags.join("、");
+      syncButtonStates();
+    });
+  });
+
+  clearButton.addEventListener("click", () => {
+    harvestInput.value = "";
+    syncButtonStates();
+  });
+
+  harvestInput.addEventListener("input", syncButtonStates);
+
+  syncButtonStates();
+});
+</script>
 </body>
 </html>
