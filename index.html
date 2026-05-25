@@ -926,6 +926,15 @@ h1 {
     return String(name || "").trim().replace(/_(LINE|DC)$/i, "");
   }
 
+  function normalizePlatform(platform) {
+    platform = String(platform || "LINE").trim().toUpperCase();
+    return platform === "DC" ? "DC" : "LINE";
+  }
+
+  function platformTagHtml(platform) {
+    return ' <span class="name-platform-tag">' + normalizePlatform(platform) + '</span>';
+  }
+
   function closeNicknameGate() {
     const gate = document.getElementById("nicknameGate");
     if (!gate) return;
@@ -952,15 +961,17 @@ h1 {
       return false;
     }
 
-    const finalNickname = normalizeNickname(raw) + "_" + platform;
+    const finalNickname = normalizeNickname(raw);
+    const finalPlatform = normalizePlatform(platform);
     localStorage.setItem("flowerWishNickname", finalNickname);
+    localStorage.setItem("flowerWishPlatform", finalPlatform);
     window.nickname = finalNickname;
 
     const mainInput = document.getElementById("nicknameInput");
     if (mainInput) mainInput.value = finalNickname;
 
     const currentText = document.getElementById("currentNicknameText");
-    if (currentText) currentText.textContent = finalNickname;
+    if (currentText) currentText.innerHTML = finalNickname + platformTagHtml(finalPlatform);
 
     closeNicknameGate();
     return false;
@@ -982,7 +993,7 @@ h1 {
     const match = text.match(/_(LINE|DC)$/i);
     return {
       name: match ? text.replace(/_(LINE|DC)$/i, "") : text,
-      platform: match ? match[1].toUpperCase() : "LINE"
+      platform: match ? match[1].toUpperCase() : (localStorage.getItem("flowerWishPlatform") || "LINE")
     };
   }
 

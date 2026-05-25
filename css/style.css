@@ -3626,3 +3626,21 @@ h1 {
   opacity:0.4;
   cursor:not-allowed;
 }
+
+/* 暱稱平台標籤：不寫入暱稱，只作為畫面顯示 */
+.name-platform-tag{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-left:6px;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:0.75em;
+  font-weight:800;
+  line-height:1.2;
+  color:#243b25;
+  background:rgba(220, 244, 196, 0.95);
+  border:1px solid rgba(255,255,255,0.35);
+  vertical-align:middle;
+  white-space:nowrap;
+}
