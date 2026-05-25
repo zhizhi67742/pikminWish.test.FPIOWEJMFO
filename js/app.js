@@ -50,6 +50,41 @@ function getWishKey(item) {
   return item && (typeof item.id !== "undefined" ? item.id : item.firebaseId);
 }
 
+function getWishSortTime(item) {
+  if (!item) return 0;
+
+  const candidates = [
+    item.createdTimestamp,
+    item.createdAtSort,
+    item.createdAt,
+    item.acceptedAt,
+    item.doneAt,
+    item.id,
+    item.firebaseId
+  ];
+
+  for (const value of candidates) {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+
+    if (typeof value === "string" && value.trim()) {
+      const normalized = value.trim().replace(/-/g, "/");
+      const parsed = new Date(normalized).getTime();
+      if (!Number.isNaN(parsed)) return parsed;
+
+      const numberValue = Number(value);
+      if (Number.isFinite(numberValue) && numberValue > 0) return numberValue;
+    }
+  }
+
+  return 0;
+}
+
+function sortOldestFirst(items, sortGetter) {
+  return (Array.isArray(items) ? items.slice() : []).sort(function (a, b) {
+    return (sortGetter ? sortGetter(a) : getWishSortTime(a)) - (sortGetter ? sortGetter(b) : getWishSortTime(b));
+  });
+}
+
 function jsValue(value) {
   return JSON.stringify(value);
 }
@@ -336,7 +371,7 @@ function addWish() {
   const start = document.getElementById("startHour").value + ":" + document.getElementById("startMinute").value;
   const end = document.getElementById("endHour").value + ":" + document.getElementById("endMinute").value;
 
-  wishes.unshift({
+  wishes.push({
     id: Date.now(),
     flower: flower,
     nickname: nickname,
@@ -687,7 +722,7 @@ function addLocalWishHistory(record) {
   });
 
   if (!exists) {
-    wishHistory.unshift(record);
+    wishHistory.push(record);
   }
 }
 
@@ -705,7 +740,7 @@ function renderWishHistory() {
   });
 
   records.sort(function (a, b) {
-    return getHistorySortTime(b) - getHistorySortTime(a);
+    return getHistorySortTime(a) - getHistorySortTime(b);
   });
 
   if (records.length === 0) {
@@ -761,7 +796,7 @@ async function confirmDone() {
   item.likes = 0;
   item.liked = false;
 
-  done.unshift(item);
+  done.push(item);
 
   const historyRecord = makeWishHistoryRecord(item, "已完成");
   addLocalWishHistory(historyRecord);
@@ -820,7 +855,7 @@ function renderWishes() {
     return;
   }
 
-  wishes.forEach(function (wish) {
+  sortOldestFirst(wishes).forEach(function (wish) {
     const cardClass = wish.isExample ? "card example-card" : "card";
     if (wish.status === "pending" || wish.status === "done") return;
 
@@ -868,7 +903,7 @@ function renderPending() {
     return;
   }
 
-  pending.forEach(function (item) {
+  sortOldestFirst(pending).forEach(function (item) {
     const canComplete = isCurrentFarmer(item);
     const actionButton = canComplete
       ? `<button class="done-btn" type="button" data-pending-key="${escapeHtml(getWishKey(item))}">完成分享</button>`
@@ -902,7 +937,7 @@ function renderDone() {
     return;
   }
 
-  done.forEach(function (item) {
+  sortOldestFirst(done, function (item) { return item.doneAt || getWishSortTime(item); }).forEach(function (item) {
     if (typeof item.id === "undefined") item.id = item.firebaseId || Date.now();
     if (typeof item.likes === "undefined") item.likes = 0;
     const doneKey = getWishKey(item);
