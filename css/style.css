@@ -3484,3 +3484,37 @@ h1 {
 .flower-combo-option {
   font-family: inherit !important;
 }
+
+
+/* ===== FINAL FIX: 花種下拉選單貼齊輸入框，不使用 fixed 座標 ===== */
+.flower-combo-wrap{
+  position:relative !important;
+  overflow:visible !important;
+}
+#flowerComboDropdown.flower-combo-dropdown{
+  position:absolute !important;
+  left:0 !important;
+  right:0 !important;
+  top:calc(100% + 6px) !important;
+  width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  z-index:999999 !important;
+}
+.flower-picker,
+.flower-picker-row,
+.flower-picker-row.combo-row,
+.flower-field,
+#wish,
+.panel{
+  overflow:visible !important;
+}
+
+/* ===== FINAL REAL FIX: 花種下拉選單改用 body fixed 定位，桌機/手機都貼齊輸入框 ===== */
+body > #flowerComboDropdown.flower-combo-dropdown{
+  position:fixed !important;
+  right:auto !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  z-index:999999 !important;
+}

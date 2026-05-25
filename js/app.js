@@ -2578,13 +2578,36 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
 
   function applyDropdownPosition(input, dropdown) {
     if (!input || !dropdown) return;
+
+    // 將下拉選單掛到 body，使用畫面座標貼齊輸入框。
+    // 這樣電腦版與手機版都不會被表單 grid / overflow / transform 影響而亂飄。
+    if (dropdown.parentElement !== document.body) {
+      document.body.appendChild(dropdown);
+    }
+
     const rect = input.getBoundingClientRect();
+    const gap = 6;
+    const viewportPadding = 10;
+    const maxWidth = Math.max(220, window.innerWidth - viewportPadding * 2);
+    const width = Math.min(rect.width, maxWidth);
+    const left = Math.min(
+      Math.max(viewportPadding, rect.left),
+      Math.max(viewportPadding, window.innerWidth - width - viewportPadding)
+    );
+    const spaceBelow = window.innerHeight - rect.bottom - viewportPadding - gap;
+    const spaceAbove = rect.top - viewportPadding - gap;
+    const openUp = spaceBelow < 180 && spaceAbove > spaceBelow;
+    const maxHeight = Math.max(150, Math.min(260, openUp ? spaceAbove : spaceBelow));
+    const top = openUp ? Math.max(viewportPadding, rect.top - maxHeight - gap) : rect.bottom + gap;
+
     dropdown.style.position = "fixed";
-    dropdown.style.left = rect.left + "px";
-    dropdown.style.top = (rect.bottom + 6) + "px";
-    dropdown.style.width = rect.width + "px";
-    dropdown.style.maxHeight = "260px";
+    dropdown.style.left = left + "px";
+    dropdown.style.right = "auto";
+    dropdown.style.top = top + "px";
+    dropdown.style.width = width + "px";
+    dropdown.style.maxHeight = maxHeight + "px";
     dropdown.style.zIndex = "999999";
+    dropdown.style.boxSizing = "border-box";
   }
 
   function installFlowerDeployDropdownFix() {
