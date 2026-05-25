@@ -20,13 +20,6 @@
 
 </head>
 <body>
-  <div class="quick-floating-nav" id="quickFloatingNav" aria-label="快速切換">
-    <button type="button" onclick="quickGoSection('wish')">🌱 許願池</button>
-    <button type="button" onclick="quickGoSection('history')">🕰️ 歷史</button>
-    <button type="button" onclick="quickGoSection('dex')">🌸 圖鑑</button>
-    <button type="button" onclick="quickGoSection('changelog')">📜 更新</button>
-  </div>
-
   <div class="bg-decor decor-1">✨</div>
   <div class="bg-decor decor-2">🌸</div>
   <div class="bg-decor decor-3">🌱</div>
@@ -113,31 +106,31 @@
         <button class="primary-btn" onclick="addWish()">🌱 新增願望卡</button>
       </section>
 
-      <section class="section-title collapsible-title">
-        <button type="button" class="collapse-toggle" onclick="toggleWishArea('wishList', this)" aria-expanded="true">
+      <section class="section-title collapse-title">
+        <button type="button" class="collapse-btn" data-collapse-target="wishList" aria-expanded="true">
           <span>🌸 許願區</span>
-          <span class="collapse-arrow">▼</span>
+          <span class="collapse-icon">▼</span>
         </button>
       </section>
-      <div id="wishList" class="card-grid collapsible-area"></div>
+      <div id="wishList" class="card-grid collapse-content"></div>
 
-      <section class="section-title collapsible-title">
-        <button type="button" class="collapse-toggle" onclick="toggleWishArea('pendingList', this)" aria-expanded="true">
+      <section class="section-title collapse-title">
+        <button type="button" class="collapse-btn" data-collapse-target="pendingList" aria-expanded="true">
           <span>🌱 待完成區</span>
-          <span class="collapse-arrow">▼</span>
+          <span class="collapse-icon">▼</span>
         </button>
         <p>大家都看得到進度，但只有接單花農可以按「完成分享」。</p>
       </section>
-      <div id="pendingList" class="card-grid collapsible-area"></div>
+      <div id="pendingList" class="card-grid collapse-content"></div>
 
-      <section class="section-title collapsible-title">
-        <button type="button" class="collapse-toggle" onclick="toggleWishArea('doneList', this)" aria-expanded="true">
+      <section class="section-title collapse-title">
+        <button type="button" class="collapse-btn" data-collapse-target="doneList" aria-expanded="true">
           <span>✨ 已完成區</span>
-          <span class="collapse-arrow">▼</span>
+          <span class="collapse-icon">▼</span>
         </button>
         <p>分享地點支援多行座標，完成後 1 小時自動刪除。</p>
       </section>
-      <div id="doneList" class="card-grid collapsible-area"></div>
+      <div id="doneList" class="card-grid collapse-content"></div>
     </section>
 <section id="history" class="page-section">
       <section class="panel">

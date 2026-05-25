@@ -1912,60 +1912,54 @@ window.addEventListener("load", () => {
 });
 
 
-/* ===== v1.1.0 add: 大區塊折疊 + 右側快速切換 ===== */
-function updateCollapsibleHeight(target) {
-  if (!target || target.classList.contains("is-collapsed")) return;
-  target.style.maxHeight = target.scrollHeight + "px";
+/* ===== 區塊折疊：只套用許願區 / 待完成區 / 已完成區 ===== */
+function setCollapseHeight(el) {
+  if (!el || el.classList.contains("is-collapsed")) return;
+  el.style.maxHeight = el.scrollHeight + "px";
 }
 
-function refreshCollapsibleAreas() {
-  ["wishList", "pendingList", "doneList"].forEach(function (id) {
-    updateCollapsibleHeight(document.getElementById(id));
-  });
+function refreshCollapseHeights() {
+  document.querySelectorAll(".collapse-content").forEach(setCollapseHeight);
 }
 
-function toggleWishArea(targetId, btn) {
-  const target = document.getElementById(targetId);
-  if (!target) return;
+function initCollapseBlocks() {
+  document.querySelectorAll(".collapse-btn").forEach(function (btn) {
+    if (btn.dataset.collapseReady === "1") return;
+    btn.dataset.collapseReady = "1";
 
-  const willCollapse = !target.classList.contains("is-collapsed");
-  const arrow = btn ? btn.querySelector(".collapse-arrow") : null;
+    btn.addEventListener("click", function () {
+      const targetId = btn.getAttribute("data-collapse-target");
+      const target = document.getElementById(targetId);
+      const icon = btn.querySelector(".collapse-icon");
+      if (!target) return;
 
-  if (willCollapse) {
-    target.style.maxHeight = target.scrollHeight + "px";
-    requestAnimationFrame(function () {
-      target.classList.add("is-collapsed");
-      target.style.maxHeight = "0px";
+      if (target.classList.contains("is-collapsed")) {
+        target.classList.remove("is-collapsed");
+        target.style.maxHeight = target.scrollHeight + "px";
+        btn.setAttribute("aria-expanded", "true");
+        if (icon) icon.textContent = "▼";
+      } else {
+        target.style.maxHeight = target.scrollHeight + "px";
+        requestAnimationFrame(function () {
+          target.classList.add("is-collapsed");
+          target.style.maxHeight = "0px";
+        });
+        btn.setAttribute("aria-expanded", "false");
+        if (icon) icon.textContent = "▶";
+      }
     });
-    if (btn) btn.setAttribute("aria-expanded", "false");
-    if (arrow) arrow.textContent = "▶";
-  } else {
-    target.classList.remove("is-collapsed");
-    target.style.maxHeight = target.scrollHeight + "px";
-    if (btn) btn.setAttribute("aria-expanded", "true");
-    if (arrow) arrow.textContent = "▼";
-  }
-}
+  });
 
-function quickGoSection(sectionId) {
-  const navBtn = document.querySelector(".main-nav .nav-btn[onclick*=\"'" + sectionId + "'\"]");
-  showSection(sectionId, navBtn || document.querySelector(".main-nav .nav-btn"));
-  const target = document.getElementById(sectionId);
-  if (target) {
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-}
+  refreshCollapseHeights();
 
-window.addEventListener("load", refreshCollapsibleAreas);
-window.addEventListener("resize", refreshCollapsibleAreas);
-
-const collapsibleObserver = new MutationObserver(refreshCollapsibleAreas);
-window.addEventListener("load", function () {
   ["wishList", "pendingList", "doneList"].forEach(function (id) {
     const el = document.getElementById(id);
-    if (el) {
-      collapsibleObserver.observe(el, { childList: true, subtree: true });
-      updateCollapsibleHeight(el);
-    }
+    if (!el || el.dataset.collapseObserved === "1") return;
+    el.dataset.collapseObserved = "1";
+    new MutationObserver(refreshCollapseHeights).observe(el, { childList: true, subtree: true });
   });
-});
+}
+
+window.addEventListener("load", initCollapseBlocks);
+window.addEventListener("resize", refreshCollapseHeights);
+document.addEventListener("DOMContentLoaded", initCollapseBlocks);
