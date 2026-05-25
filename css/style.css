@@ -266,7 +266,8 @@ label textarea {
 }
 
 .card .help-btn,
-.card .done-btn {
+.card .done-btn,
+.card .cancel-take-btn {
   width: 100%;
   margin-top: 16px;
   background: #7dbb6f;
