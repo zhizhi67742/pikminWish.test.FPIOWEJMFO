@@ -3531,3 +3531,23 @@ h1 {
     max-width: 100% !important;
   }
 }
+
+
+/* 手機板 許願區＆待完成區 訂單選項並排 */
+@media (max-width: 768px) {
+  .order-filter-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .order-filter-btn {
+    flex: 1;
+    width: 100%;
+    white-space: nowrap;
+    text-align: center;
+    font-size: 12px;
+    padding: 8px 6px;
+  }
+}
