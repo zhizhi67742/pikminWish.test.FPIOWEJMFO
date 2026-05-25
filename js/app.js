@@ -1822,13 +1822,17 @@ async function startFirebaseSync() {
 
 function enterWebsite() {
   const input = document.getElementById("gateNicknameInput");
-  nickname = input.value.trim();
+  const socialSelect = document.getElementById("socialTypeSelect");
+  const rawNickname = input ? input.value.trim() : "";
+  const platform = socialSelect ? socialSelect.value : "LINE";
 
-  if (!nickname) {
-    alert("請輸入 LINE 社群暱稱");
+  if (!rawNickname) {
+    alert("請輸入 LINE 社群或 DC 暱稱");
     return;
   }
 
+  const cleanNickname = rawNickname.replace(/_(LINE|DC)$/i, "");
+  nickname = `${cleanNickname}_${platform}`;
   localStorage.setItem("flowerWishNickname", nickname);
 
   const nicknameInput = document.getElementById("nicknameInput");
@@ -1836,6 +1840,7 @@ function enterWebsite() {
     nicknameInput.value = nickname;
   }
 
+  updateCurrentNicknameBar();
   document.getElementById("nicknameGate").classList.add("hidden-gate");
 
   if (window.firebaseDB && window.firebaseFns) {

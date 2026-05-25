@@ -3144,3 +3144,65 @@ label textarea {
     font-size:13px !important;
   }
 }
+
+
+/* ===== FIX: 暱稱入口 LINE/DC 與輸入框同一排（最終覆蓋） ===== */
+.nickname-input-wrap .nickname-row{
+  display: grid !important;
+  grid-template-columns: 96px minmax(0, 1fr) !important;
+  gap: 0 !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  flex-wrap: nowrap !important;
+  margin: 0 0 10px 0 !important;
+}
+.nickname-input-wrap .nickname-row > #socialTypeSelect,
+.nickname-input-wrap .nickname-row > #gateNicknameInput{
+  box-sizing: border-box !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  margin: 0 !important;
+  background: #111922 !important;
+  border: 1px solid rgba(255, 217, 102, 0.38) !important;
+  color: #f5f7f4 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+.nickname-input-wrap .nickname-row > #socialTypeSelect{
+  width: 96px !important;
+  min-width: 96px !important;
+  max-width: 96px !important;
+  padding: 0 12px !important;
+  border-right: 0 !important;
+  border-radius: 16px 0 0 16px !important;
+  color: #ffd966 !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  outline: none !important;
+  cursor: pointer !important;
+}
+.nickname-input-wrap .nickname-row > #gateNicknameInput{
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 0 16px !important;
+  border-radius: 0 16px 16px 0 !important;
+  font-size: 16px !important;
+}
+.nickname-input-wrap .nickname-row > #gateNicknameInput::placeholder{
+  color: rgba(245,247,244,.55) !important;
+}
+.nickname-input-wrap #socialTypeSelect option{
+  background: #111922 !important;
+  color: #ffd966 !important;
+}
+@media (max-width: 480px){
+  .nickname-input-wrap .nickname-row{
+    grid-template-columns: 82px minmax(0, 1fr) !important;
+  }
+  .nickname-input-wrap .nickname-row > #socialTypeSelect{
+    width: 82px !important;
+    min-width: 82px !important;
+    max-width: 82px !important;
+    font-size: 13px !important;
+    padding: 0 9px !important;
+  }
+}
