@@ -1840,10 +1840,19 @@ function enterWebsite() {
     nicknameInput.value = nickname;
   }
 
-  updateCurrentNicknameBar();
-  document.getElementById("nicknameGate").classList.add("hidden-gate");
+  const gate = document.getElementById("nicknameGate");
+  if (gate) {
+    gate.classList.add("hidden-gate");
+    gate.style.display = "none";
+    gate.style.visibility = "hidden";
+    gate.style.pointerEvents = "none";
+  }
 
-  if (window.firebaseDB && window.firebaseFns) {
+  if (typeof updateNicknameDisplay === "function") {
+    updateNicknameDisplay();
+  }
+
+  if (window.firebaseDB && window.firebaseFns && typeof loadDexFromCloud === "function") {
     loadDexFromCloud(nickname);
   }
 }
@@ -2147,3 +2156,16 @@ function initOrderFilters() {
 document.addEventListener("DOMContentLoaded", initOrderFilters);
 window.addEventListener("load", initOrderFilters);
 setTimeout(initOrderFilters, 500);
+
+
+window.enterWebsite = enterWebsite;
+
+document.addEventListener("DOMContentLoaded", function () {
+  const enterBtn = document.querySelector(".enter-btn");
+  if (enterBtn) {
+    enterBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      enterWebsite();
+    });
+  }
+});
