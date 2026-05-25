@@ -3121,3 +3121,111 @@ label textarea {
     padding: 13px !important;
   }
 }
+
+/* ===== FIX v1.1.0：暱稱規則視窗最終修正 =====
+   讓規則文字只在中間區塊滾動，暱稱輸入與「進入網站」永遠固定顯示在下方。 */
+.nickname-gate {
+  box-sizing: border-box !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px !important;
+  overflow: hidden !important;
+}
+
+.nickname-modal {
+  box-sizing: border-box !important;
+  width: min(92vw, 560px) !important;
+  max-height: calc(100vh - 24px) !important;
+  max-height: calc(100dvh - 24px) !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  overflow: hidden !important;
+  padding: clamp(14px, 3vh, 28px) !important;
+}
+
+.nickname-modal h1 {
+  flex: 0 0 auto !important;
+  margin: 0 0 clamp(10px, 2vh, 20px) !important;
+}
+
+.nickname-modal .rule-scroll {
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  margin-bottom: clamp(10px, 2vh, 18px) !important;
+  padding-right: 8px !important;
+}
+
+.nickname-input-wrap {
+  min-height: max-content !important;
+  flex: 0 0 auto !important;
+  background: rgba(23,30,40,0.98) !important;
+  padding-top: 2px !important;
+}
+
+.nickname-input-wrap label {
+  margin-bottom: 8px !important;
+}
+
+.nickname-input-wrap input {
+  box-sizing: border-box !important;
+  margin-bottom: 8px !important;
+}
+
+.nickname-tip {
+  margin-bottom: 10px !important;
+}
+
+.enter-btn {
+  display: block !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+}
+
+@media (max-height: 650px) {
+  .nickname-modal {
+    padding: 12px 16px !important;
+  }
+
+  .nickname-modal h1 {
+    font-size: 22px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .rule-section {
+    margin-bottom: 12px !important;
+  }
+
+  .rule-section h2 {
+    margin-bottom: 6px !important;
+  }
+
+  .rule-section p,
+  .rule-section li {
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .rule-section li {
+    margin-bottom: 5px !important;
+  }
+
+  .nickname-input-wrap label {
+    font-size: 14px !important;
+  }
+
+  .nickname-input-wrap input {
+    padding: 10px 12px !important;
+  }
+
+  .nickname-tip {
+    font-size: 11px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .enter-btn {
+    padding: 11px !important;
+    font-size: 15px !important;
+  }
+}
