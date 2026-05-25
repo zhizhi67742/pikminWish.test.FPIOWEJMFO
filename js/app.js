@@ -210,7 +210,6 @@ function initFlowerPicker() {
   const dropdown = document.getElementById("flowerComboDropdown");
   const colorSelect = document.getElementById("flowerColorSelect");
   const flowerInput = document.getElementById("flowerInput");
-  const datalist = document.getElementById("flowerComboList");
 
   if (!comboInput || !colorSelect || !flowerInput) return;
 
@@ -246,17 +245,8 @@ function initFlowerPicker() {
   }
 
   function renderDropdown() {
-    const flowers = getFilteredFlowers();
-    if (datalist) {
-      datalist.innerHTML = "";
-      flowers.forEach(function (flower) {
-        const option = document.createElement("option");
-        option.value = flower.name;
-        if (flower.subtitle) option.label = flower.subtitle;
-        datalist.appendChild(option);
-      });
-    }
     if (!dropdown) return;
+    const flowers = getFilteredFlowers();
     dropdown.innerHTML = "";
 
     if (!flowers.length) {
@@ -320,22 +310,8 @@ function initFlowerPicker() {
   comboInput.onfocus = function () {
     renderDropdown();
   };
-  comboInput.onclick = function () {
-    renderDropdown();
-  };
-  comboInput.addEventListener("pointerdown", function () {
-    setTimeout(renderDropdown, 0);
-  });
-  window.openFlowerComboDropdown = function () {
-    comboInput.focus();
-    renderDropdown();
-  };
   comboInput.onkeydown = function (event) {
     if (event.key === "Escape") closeDropdown();
-  };
-  comboInput.onchange = function () {
-    renderColorOptions();
-    updateSelectedFlowerInput();
   };
   colorSelect.onchange = updateSelectedFlowerInput;
 
@@ -2584,370 +2560,142 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
 
 
 
-/* final real flower combo: one input + body-level dropdown for desktop/mobile */
-function initFlowerPicker() {
-  const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-  let dropdown = document.getElementById("flowerComboDropdown");
-  const colorSelect = document.getElementById("flowerColorSelect");
-  const flowerInput = document.getElementById("flowerInput");
-  const datalist = document.getElementById("flowerComboList");
-  const dropdownBtn = document.querySelector(".flower-dropdown-btn");
-  const clearBtn = document.querySelector(".flower-clear-btn");
-  if (!comboInput || !dropdown || !colorSelect || !flowerInput) return;
-
-  // Move the custom dropdown to <body>. This avoids desktop layouts/cards clipping the menu.
-  if (dropdown.parentElement !== document.body) {
-    document.body.appendChild(dropdown);
-  }
-
-  const allColors = ["白", "黃", "紅", "藍"];
-  const getFlowers = () => Array.isArray(flowerDex) && flowerDex.length ? flowerDex : DEFAULT_FLOWER_DEX;
-  const norm = (value) => String(value || "").trim().toLowerCase();
-  const typedName = () => comboInput.value.trim();
-  const findFlower = (name) => getFlowers().find((flower) => norm(flower.name) === norm(name));
-  const filteredFlowers = () => {
-    const keyword = norm(comboInput.value);
-    const list = getFlowers();
-    if (!keyword) return list;
-    return list.filter((flower) => norm(flower.name).includes(keyword) || norm(flower.subtitle || "").includes(keyword));
-  };
-
-  function syncHiddenFlower() {
-    const name = typedName();
-    const color = colorSelect.value;
-    flowerInput.value = name && color ? color + "色" + name : "";
-  }
-
-  function renderColors() {
-    const selected = findFlower(typedName());
-    const colors = selected && Array.isArray(selected.colors) && selected.colors.length ? selected.colors : allColors;
-    const current = colorSelect.value;
-    colorSelect.innerHTML = "";
-    colors.forEach((color) => {
-      const option = document.createElement("option");
-      option.value = color;
-      option.textContent = color + "色";
-      colorSelect.appendChild(option);
-    });
-    if (colors.includes(current)) colorSelect.value = current;
-    syncHiddenFlower();
-  }
-
-  function renderDatalist() {
-    if (!datalist) return;
-    datalist.innerHTML = "";
-    getFlowers().forEach((flower) => {
-      const option = document.createElement("option");
-      option.value = flower.name;
-      if (flower.subtitle) option.label = flower.subtitle;
-      datalist.appendChild(option);
-    });
-  }
-
-  function positionDropdown() {
-    const rect = comboInput.getBoundingClientRect();
-    dropdown.style.left = rect.left + "px";
-    dropdown.style.top = (rect.bottom + 6) + "px";
-    dropdown.style.width = rect.width + "px";
-  }
-
-  function closeDropdown() {
-    dropdown.classList.remove("open", "is-open", "body-flower-dropdown-open");
-  }
-
-  function renderDropdown() {
-    const flowers = filteredFlowers();
-    dropdown.innerHTML = "";
-    if (!flowers.length) {
-      const empty = document.createElement("div");
-      empty.className = "flower-combo-empty";
-      empty.textContent = "沒有符合的花種，可直接輸入自訂花名";
-      dropdown.appendChild(empty);
-      return;
-    }
-    flowers.forEach((flower) => {
-      const optionBtn = document.createElement("button");
-      optionBtn.type = "button";
-      optionBtn.className = "flower-combo-option";
-      optionBtn.textContent = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
-      optionBtn.addEventListener("mousedown", (event) => {
-        event.preventDefault();
-        comboInput.value = flower.name;
-        renderColors();
-        closeDropdown();
-      });
-      dropdown.appendChild(optionBtn);
-    });
-  }
-
-  function openDropdown() {
-    renderDropdown();
-    positionDropdown();
-    dropdown.classList.add("open", "is-open", "body-flower-dropdown-open");
-  }
-
-  comboInput.oninput = () => { renderColors(); openDropdown(); };
-  comboInput.onfocus = openDropdown;
-  comboInput.onclick = openDropdown;
-  comboInput.onchange = renderColors;
-  comboInput.onkeydown = (event) => {
-    if (event.key === "Escape") closeDropdown();
-    if (event.key === "ArrowDown") { event.preventDefault(); openDropdown(); }
-  };
-  colorSelect.onchange = syncHiddenFlower;
-
-  if (dropdownBtn) {
-    dropdownBtn.onclick = (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      comboInput.focus();
-      openDropdown();
-    };
-  }
-  if (clearBtn) {
-    clearBtn.onclick = (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      comboInput.value = "";
-      renderColors();
-      openDropdown();
-      comboInput.focus();
-    };
-  }
-
-  if (!window.__flowerComboBodyOutsideClick) {
-    document.addEventListener("mousedown", (event) => {
-      const input = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-      const menu = document.getElementById("flowerComboDropdown");
-      const arrow = document.querySelector(".flower-dropdown-btn");
-      const clear = document.querySelector(".flower-clear-btn");
-      if (!menu) return;
-      if (event.target === input || event.target === arrow || event.target === clear || menu.contains(event.target)) return;
-      menu.classList.remove("open", "is-open", "body-flower-dropdown-open");
-    });
-    window.addEventListener("resize", () => {
-      const menu = document.getElementById("flowerComboDropdown");
-      if (menu && menu.classList.contains("open")) {
-        const input = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-        if (input) {
-          const rect = input.getBoundingClientRect();
-          menu.style.left = rect.left + "px";
-          menu.style.top = (rect.bottom + 6) + "px";
-          menu.style.width = rect.width + "px";
-        }
-      }
-    });
-    window.__flowerComboBodyOutsideClick = true;
-  }
-
-  window.openFlowerComboDropdown = function () { comboInput.focus(); openDropdown(); };
-  window.clearFlowerComboInput = function () {
-    comboInput.value = "";
-    renderColors();
-    openDropdown();
-    comboInput.focus();
-  };
-
-  renderDatalist();
-  renderColors();
-}
-
-
-/* deploy fix 20260526: hosted desktop-safe flower dropdown */
+/* ===== DEPLOY FIX: 花種同一格輸入＋下拉，修正上傳後選單被擋/沒顯示 ===== */
 (function () {
-  const VERSION = "flower-dropdown-deploy-20260526-01";
-
-  function getFlowerList() {
-    if (Array.isArray(window.flowerDex) && window.flowerDex.length) return window.flowerDex;
-    if (typeof flowerDex !== "undefined" && Array.isArray(flowerDex) && flowerDex.length) return flowerDex;
-    if (typeof DEFAULT_FLOWER_DEX !== "undefined" && Array.isArray(DEFAULT_FLOWER_DEX)) return DEFAULT_FLOWER_DEX;
-    return [];
-  }
-
-  function normalize(value) {
+  function normalizeFlowerText(value) {
     return String(value || "").trim().toLowerCase();
   }
 
-  function forceInitFlowerCombo() {
-    const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
+  function getFlowerSourceList() {
+    try {
+      if (Array.isArray(flowerDex) && flowerDex.length) return flowerDex;
+    } catch (e) {}
+    try {
+      if (Array.isArray(DEFAULT_FLOWER_DEX) && DEFAULT_FLOWER_DEX.length) return DEFAULT_FLOWER_DEX;
+    } catch (e) {}
+    return [];
+  }
+
+  function applyDropdownPosition(input, dropdown) {
+    if (!input || !dropdown) return;
+    const rect = input.getBoundingClientRect();
+    dropdown.style.position = "fixed";
+    dropdown.style.left = rect.left + "px";
+    dropdown.style.top = (rect.bottom + 6) + "px";
+    dropdown.style.width = rect.width + "px";
+    dropdown.style.maxHeight = "260px";
+    dropdown.style.zIndex = "999999";
+  }
+
+  function installFlowerDeployDropdownFix() {
+    const input = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
+    const dropdown = document.getElementById("flowerComboDropdown");
     const colorSelect = document.getElementById("flowerColorSelect");
-    const flowerInput = document.getElementById("flowerInput");
-    const datalist = document.getElementById("flowerComboList");
-    const dropdownBtn = document.querySelector(".flower-dropdown-btn");
-    const clearBtn = document.querySelector(".flower-clear-btn");
-    if (!comboInput || !colorSelect || !flowerInput) return;
+    const hiddenInput = document.getElementById("flowerInput");
+    if (!input || !dropdown || !colorSelect || !hiddenInput) return;
 
-    let dropdown = document.getElementById("flowerComboDropdown");
-    if (!dropdown) {
-      dropdown = document.createElement("div");
-      dropdown.id = "flowerComboDropdown";
-      dropdown.className = "flower-combo-dropdown";
-      dropdown.setAttribute("role", "listbox");
+    if (input.dataset.deployDropdownFixed === "1") return;
+    input.dataset.deployDropdownFixed = "1";
+
+    const defaultColors = ["白", "黃", "紅", "藍"];
+
+    function findFlower(name) {
+      const key = normalizeFlowerText(name);
+      return getFlowerSourceList().find(function (flower) {
+        return normalizeFlowerText(flower.name) === key;
+      });
     }
-    if (dropdown.parentElement !== document.body) document.body.appendChild(dropdown);
-    dropdown.dataset.version = VERSION;
 
-    const allColors = ["白", "黃", "紅", "藍"];
-    const typedName = () => comboInput.value.trim();
-    const list = () => getFlowerList();
-    const findFlower = (name) => list().find((flower) => normalize(flower.name) === normalize(name));
-    const filtered = () => {
-      const keyword = normalize(comboInput.value);
-      const flowers = list();
-      if (!keyword) return flowers;
-      return flowers.filter((flower) => normalize(flower.name).includes(keyword) || normalize(flower.subtitle || "").includes(keyword));
-    };
-
-    function syncHiddenFlower() {
-      const name = typedName();
+    function updateHiddenValue() {
+      const name = input.value.trim();
       const color = colorSelect.value;
-      flowerInput.value = name && color ? color + "色" + name : "";
+      hiddenInput.value = name && color ? color + "色" + name : "";
     }
 
     function renderColors() {
-      const found = findFlower(typedName());
-      const colors = found && Array.isArray(found.colors) && found.colors.length ? found.colors : allColors;
-      const old = colorSelect.value;
+      const current = colorSelect.value;
+      const found = findFlower(input.value);
+      const colors = found && Array.isArray(found.colors) && found.colors.length ? found.colors : defaultColors;
       colorSelect.innerHTML = "";
-      colors.forEach((color) => {
+      colors.forEach(function (color) {
         const option = document.createElement("option");
         option.value = color;
         option.textContent = color + "色";
         colorSelect.appendChild(option);
       });
-      if (colors.includes(old)) colorSelect.value = old;
-      syncHiddenFlower();
-    }
-
-    function renderDatalist() {
-      if (!datalist) return;
-      datalist.innerHTML = "";
-      list().forEach((flower) => {
-        const option = document.createElement("option");
-        option.value = flower.name;
-        if (flower.subtitle) option.label = flower.subtitle;
-        datalist.appendChild(option);
-      });
-    }
-
-    function positionDropdown() {
-      const rect = comboInput.getBoundingClientRect();
-      dropdown.style.left = Math.round(rect.left) + "px";
-      dropdown.style.top = Math.round(rect.bottom + 6) + "px";
-      dropdown.style.width = Math.round(rect.width) + "px";
+      if (colors.includes(current)) colorSelect.value = current;
+      updateHiddenValue();
     }
 
     function closeDropdown() {
-      dropdown.classList.remove("open", "is-open", "body-flower-dropdown-open");
+      dropdown.classList.remove("open");
       dropdown.style.display = "none";
     }
 
-    function renderDropdown() {
-      const flowers = filtered();
+    function openDropdown() {
+      const keyword = normalizeFlowerText(input.value);
+      const flowers = getFlowerSourceList().filter(function (flower) {
+        const name = normalizeFlowerText(flower.name);
+        const subtitle = normalizeFlowerText(flower.subtitle || "");
+        return !keyword || name.includes(keyword) || subtitle.includes(keyword);
+      });
+
       dropdown.innerHTML = "";
+
       if (!flowers.length) {
         const empty = document.createElement("div");
         empty.className = "flower-combo-empty";
         empty.textContent = "沒有符合的花種，可直接輸入自訂花名";
         dropdown.appendChild(empty);
-        return;
-      }
-      flowers.forEach((flower) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "flower-combo-option";
-        button.setAttribute("role", "option");
-        button.textContent = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
-        button.addEventListener("pointerdown", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          comboInput.value = flower.name;
-          renderColors();
-          closeDropdown();
-          comboInput.focus();
+      } else {
+        flowers.forEach(function (flower) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "flower-combo-option";
+          btn.textContent = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
+          btn.addEventListener("mousedown", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            input.value = flower.name;
+            renderColors();
+            closeDropdown();
+          });
+          dropdown.appendChild(btn);
         });
-        dropdown.appendChild(button);
-      });
-    }
+      }
 
-    function openDropdown() {
-      renderDropdown();
-      positionDropdown();
+      applyDropdownPosition(input, dropdown);
       dropdown.style.display = "block";
-      dropdown.classList.add("open", "is-open", "body-flower-dropdown-open");
+      dropdown.classList.add("open");
     }
 
-    comboInput.removeAttribute("readonly");
-    comboInput.setAttribute("autocomplete", "off");
-    comboInput.addEventListener("focus", openDropdown);
-    comboInput.addEventListener("click", openDropdown);
-    comboInput.addEventListener("pointerdown", () => setTimeout(openDropdown, 0));
-    comboInput.addEventListener("input", () => { renderColors(); openDropdown(); });
-    comboInput.addEventListener("change", renderColors);
-    comboInput.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeDropdown();
-      if (event.key === "ArrowDown") { event.preventDefault(); openDropdown(); }
-    });
-    colorSelect.addEventListener("change", syncHiddenFlower);
-
-    if (dropdownBtn) {
-      dropdownBtn.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        comboInput.focus();
-        openDropdown();
-      });
-    }
-    if (clearBtn) {
-      clearBtn.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        comboInput.value = "";
-        renderColors();
-        openDropdown();
-        comboInput.focus();
-      });
-    }
-
-    if (!window.__flowerComboDeployOutsideClick) {
-      document.addEventListener("pointerdown", (event) => {
-        const input = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-        const menu = document.getElementById("flowerComboDropdown");
-        const arrow = document.querySelector(".flower-dropdown-btn");
-        const clear = document.querySelector(".flower-clear-btn");
-        if (!menu) return;
-        if (event.target === input || event.target === arrow || event.target === clear || menu.contains(event.target)) return;
-        menu.classList.remove("open", "is-open", "body-flower-dropdown-open");
-        menu.style.display = "none";
-      });
-      window.addEventListener("resize", () => {
-        const menu = document.getElementById("flowerComboDropdown");
-        if (menu && menu.classList.contains("open")) positionDropdown();
-      });
-      window.addEventListener("scroll", () => {
-        const menu = document.getElementById("flowerComboDropdown");
-        if (menu && menu.classList.contains("open")) positionDropdown();
-      }, true);
-      window.__flowerComboDeployOutsideClick = true;
-    }
-
-    window.openFlowerComboDropdown = function () { comboInput.focus(); openDropdown(); };
-    window.clearFlowerComboInput = function () {
-      comboInput.value = "";
+    input.addEventListener("focus", openDropdown);
+    input.addEventListener("click", openDropdown);
+    input.addEventListener("input", function () {
       renderColors();
       openDropdown();
-      comboInput.focus();
-    };
+    });
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeDropdown();
+    });
+    colorSelect.addEventListener("change", updateHiddenValue);
 
-    renderDatalist();
+    window.addEventListener("resize", function () {
+      if (dropdown.classList.contains("open")) applyDropdownPosition(input, dropdown);
+    });
+    window.addEventListener("scroll", function () {
+      if (dropdown.classList.contains("open")) applyDropdownPosition(input, dropdown);
+    }, true);
+
+    document.addEventListener("mousedown", function (event) {
+      if (event.target === input || dropdown.contains(event.target)) return;
+      closeDropdown();
+    });
+
     renderColors();
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", forceInitFlowerCombo);
-  } else {
-    forceInitFlowerCombo();
-  }
-  window.addEventListener("load", forceInitFlowerCombo);
-  setTimeout(forceInitFlowerCombo, 600);
+  document.addEventListener("DOMContentLoaded", installFlowerDeployDropdownFix);
+  window.addEventListener("load", installFlowerDeployDropdownFix);
+  setTimeout(installFlowerDeployDropdownFix, 300);
 })();

@@ -378,7 +378,7 @@ label textarea {
 
 .coord-input {
   min-height: 135px;
-  max-height: 280px;
+  max-height: 220px;
   resize: vertical;
   line-height: 1.65;
   white-space: pre-wrap;
@@ -694,7 +694,7 @@ label textarea {
 
 .clearable-input input {
   width: 100%;
-  padding-right: 64px !important;
+  padding-right: 38px !important;
 }
 
 .clear-input-btn {
@@ -717,34 +717,6 @@ label textarea {
   cursor: pointer;
 }
 
-
-.flower-dropdown-btn {
-  position: absolute;
-  right: 38px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 22px;
-  height: 22px;
-  border: 0;
-  border-radius: 999px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,0.14);
-  color: rgba(255,255,255,0.86);
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-  z-index: 2;
-}
-
-.flower-dropdown-btn:hover {
-  transform: translateY(-50%) !important;
-  background: rgba(161,220,161,0.24);
-  color: #dfffdc;
-}
-
 .clear-input-btn:hover {
   transform: translateY(-50%) !important;
   background: rgba(255,217,102,0.24);
@@ -765,7 +737,7 @@ label textarea {
   left: 0;
   right: 0;
   top: calc(100% + 6px);
-  z-index: 9999;
+  z-index: 60;
   display: none;
   max-height: 220px;
   overflow-y: auto;
@@ -3470,126 +3442,45 @@ h1 {
 }
 
 
-/* desktop/mobile flower combo dropdown final fix */
-.flower-combo-wrap {
-  position: relative !important;
-  overflow: visible !important;
-  z-index: 50 !important;
-}
+
+/* ===== DEPLOY FIX: 花種輸入＋下拉選單，避免上傳後被版面裁切或蓋住 ===== */
 .flower-field,
 .flower-picker,
 .flower-picker-row,
-.form-grid,
+.flower-picker-row.combo-row,
+.flower-combo-wrap,
 .wish-top-fields,
-.page-section,
-.container {
+.form-grid,
+.panel,
+#wish,
+.page-section.active {
   overflow: visible !important;
 }
+
+.flower-field,
+.flower-picker,
+.flower-combo-wrap {
+  position: relative !important;
+  z-index: 20 !important;
+}
+
 #flowerComboInput {
-  width: 100% !important;
-  padding-right: 70px !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  box-sizing: border-box !important;
 }
-.flower-dropdown-btn,
-.flower-clear-btn {
-  display: inline-flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
+
+#flowerComboDropdown.flower-combo-dropdown {
+  z-index: 999999 !important;
+  background: rgba(23, 40, 33, 0.99) !important;
+  border: 1px solid rgba(255,255,255,0.24) !important;
+  box-shadow: 0 18px 38px rgba(0,0,0,0.42) !important;
 }
-.flower-combo-dropdown {
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
-  top: calc(100% + 6px) !important;
-  z-index: 2147483000 !important;
-  display: none !important;
-  max-height: 260px !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-}
-.flower-combo-dropdown.open,
-.flower-combo-dropdown.is-open {
+
+#flowerComboDropdown.flower-combo-dropdown.open {
   display: block !important;
 }
+
 .flower-combo-option {
-  display: block !important;
-}
-@media (max-width: 520px) {
-  #flowerComboInput {
-    padding-right: 62px !important;
-  }
-  .flower-dropdown-btn {
-    right: 34px !important;
-  }
-}
-
-
-/* Real desktop dropdown fix: body-level menu cannot be clipped by form/card layout */
-#flowerComboDropdown.body-flower-dropdown-open {
-  position: fixed !important;
-  z-index: 2147483647 !important;
-  display: block !important;
-  max-height: 280px !important;
-  overflow-y: auto !important;
-  padding: 6px !important;
-  border: 1px solid rgba(255,255,255,0.18) !important;
-  border-radius: 14px !important;
-  background: rgba(23, 40, 33, 0.98) !important;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.32) !important;
-}
-#flowerComboDropdown.body-flower-dropdown-open .flower-combo-option {
-  display: block !important;
-  width: 100% !important;
-  border: 0 !important;
-  border-radius: 10px !important;
-  padding: 9px 10px !important;
-  background: transparent !important;
-  color: rgba(255,255,255,0.94) !important;
-  text-align: left !important;
-  font-size: 14px !important;
-  cursor: pointer !important;
-}
-#flowerComboDropdown.body-flower-dropdown-open .flower-combo-option:hover,
-#flowerComboDropdown.body-flower-dropdown-open .flower-combo-option:focus {
-  background: rgba(161, 220, 161, 0.18) !important;
-  outline: none !important;
-}
-
-
-/* deploy fix 20260526: force flower dropdown visible on hosted desktop */
-.flower-combo-wrap { position: relative !important; overflow: visible !important; }
-.flower-picker, .flower-picker-row, .flower-field, .wish-form, .card, .panel { overflow: visible !important; }
-#flowerComboInput { padding-right: 58px !important; }
-#flowerComboDropdown.body-flower-dropdown-open,
-#flowerComboDropdown.open,
-.flower-combo-dropdown.body-flower-dropdown-open,
-.flower-combo-dropdown.open {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-}
-#flowerComboDropdown {
-  position: fixed !important;
-  z-index: 2147483647 !important;
-  max-height: min(340px, 55vh) !important;
-  overflow-y: auto !important;
-}
-.flower-dropdown-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  pointer-events: auto !important;
-  z-index: 5 !important;
-}
-
-
-/* single arrow fix: keep custom flower dropdown, hide browser/native input arrow */
-#flowerComboInput::-webkit-calendar-picker-indicator {
-  display: none !important;
-  opacity: 0 !important;
-}
-#flowerComboInput {
-  appearance: none;
-  -webkit-appearance: none;
+  font-family: inherit !important;
 }
