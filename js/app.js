@@ -9,7 +9,7 @@ let wishes = [
     nickname: "範例玩家",
     createdAt: "2026/05/23 22:45",
     timeRange: "14:00 - 23:00",
-    deleteAt: Date.now() + WISH_AUTO_DELETE_MS,
+    deleteAt: Date.now() + (1000 * 60 * 60 * 3),
     message: "謝謝花農",
     isExample: true
   }
@@ -21,8 +21,6 @@ let wishHistory = [];
 let selectedWishId = null;
 let selectedPendingId = null;
 let locallyDeletedWishKeys = new Set();
-const WISH_AUTO_DELETE_MS = 3 * 24 * 60 * 60 * 1000;
-
 
 function getCurrentNickname() {
   const savedNickname = localStorage.getItem("flowerWishNickname") || "";
@@ -379,8 +377,7 @@ function addWish() {
     nickname: nickname,
     createdAt: formatNow(),
     timeRange: start + " - " + end,
-    deleteAt: getWishDeleteAtFromCreatedAt(),
-    createdTimestamp: Date.now(),
+    deleteAt: getWishDeleteAtFromEndTime(end),
     message: message || "沒有留言",
     isExample: false
   });
@@ -878,6 +875,8 @@ function renderWishes() {
         <h3>🌸 ${escapeHtml(wish.flower)}</h3>
         <p>👤 暱稱：${escapeHtml(wish.nickname)}</p>
         <p>🕒 發願時間：${escapeHtml(wish.createdAt)}</p>
+        
+
         <p>🌙 可收花時間：${escapeHtml(wish.timeRange)}</p>
         <p>💬 ${escapeHtml(wish.message)}</p>
         ${actionButton}
@@ -1322,13 +1321,18 @@ function getColorEmoji(color) {
 }
 
 
-function getWishDeleteAtFromCreatedAt(createdAt) {
-  return getWishSortTime({ createdTimestamp: createdAt, createdAt: createdAt }) + WISH_AUTO_DELETE_MS;
-}
-
 function getWishDeleteAtFromEndTime(endTime) {
-  // 舊函式保留給舊版資料或舊呼叫使用；現在許願單一律建立後 3 天自動刪除。
-  return getWishDeleteAtFromCreatedAt(Date.now());
+  const now = new Date();
+  const parts = endTime.split(":");
+  const endDate = new Date();
+
+  endDate.setHours(Number(parts[0]), Number(parts[1]), 0, 0);
+
+  if (endDate.getTime() <= now.getTime()) {
+    endDate.setDate(endDate.getDate() + 1);
+  }
+
+  return endDate.getTime();
 }
 
 function cleanCoordinates(rawText) {
@@ -1353,14 +1357,9 @@ function formatRemainTime(targetTime) {
 
   const remain = Math.max(0, targetTime - Date.now());
   const totalSeconds = Math.floor(remain / 1000);
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-
-  if (days > 0) {
-    return `${days}天 ${String(hours).padStart(2, "0")}小時`;
-  }
 
   if (hours > 0) {
     return `${hours}小時 ${String(minutes).padStart(2, "0")}分`;
@@ -1372,7 +1371,7 @@ function formatRemainTime(targetTime) {
 function isEndingSoon(targetTime) {
   if (!targetTime) return false;
   const remain = targetTime - Date.now();
-  return remain > 0 && remain <= 6 * 60 * 60 * 1000;
+  return remain > 0 && remain <= 30 * 60 * 1000;
 }
 
 
@@ -1398,16 +1397,7 @@ function removeDemoWishesFromStorage() {
 function removeExpiredWishes() {
   const now = Date.now();
   wishes = wishes.filter(function (wish) {
-    if (wish.isExample) return true;
-
-    // 舊資料若沒有 deleteAt，補成「建立後 3 天」；真的沒有建立時間才保留，避免誤刪。
-    if (!wish.deleteAt) {
-      const createdTime = getWishSortTime(wish);
-      if (!createdTime) return true;
-      wish.deleteAt = createdTime + WISH_AUTO_DELETE_MS;
-    }
-
-    return wish.deleteAt > now;
+    return wish.isExample || !wish.deleteAt || wish.deleteAt > now;
   });
 }
 
@@ -1484,7 +1474,7 @@ function loadData() {
       nickname: "範例玩家",
       createdAt: "2026/05/23 22:45",
       timeRange: "14:00 - 23:00",
-      deleteAt: Date.now() + WISH_AUTO_DELETE_MS,
+      deleteAt: Date.now() + (1000 * 60 * 60 * 3),
       message: "謝謝花農",
       isExample: true
     });
@@ -1764,20 +1754,6 @@ async function startFirebaseSync() {
         return;
       }
 
-      if (data.status !== "pending" && data.status !== "done") {
-        if (!data.deleteAt) {
-          const createdTime = getWishSortTime(data);
-          if (createdTime) data.deleteAt = createdTime + WISH_AUTO_DELETE_MS;
-        }
-
-        if (data.deleteAt && data.deleteAt <= Date.now()) {
-          deleteDoc(doc(db, "wishes", docItem.id)).catch((error) => {
-            console.warn("過期許願單雲端自動刪除失敗", error);
-          });
-          return;
-        }
-      }
-
       if (data.status === "pending") {
         data.farmer = data.farmer || data.acceptedBy || "花農";
         pending.push(data);
@@ -1831,7 +1807,7 @@ async function startFirebaseSync() {
       createdAt: now.toLocaleString(),
       timeRange: `${startHour}:${startMinute} - ${endHour}:${endMinute}`,
       message,
-      deleteAt: getWishDeleteAtFromCreatedAt(),
+      deleteAt: getWishDeleteAtFromEndTime(`${endHour}:${endMinute}`),
       createdTimestamp: Date.now(),
       status: "wish"
     };
