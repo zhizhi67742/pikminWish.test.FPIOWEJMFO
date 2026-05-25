@@ -3407,3 +3407,36 @@ h1 {
   display: contents !important;
 }
 
+
+
+/* 花種欄位：電腦/手機都顯示「可輸入＋下拉選單」 */
+.flower-combo-picker .combo-row {
+  grid-template-columns: minmax(170px, 1fr) minmax(170px, 1fr) minmax(92px, 0.35fr);
+  align-items: end;
+}
+.flower-select-wrap,
+.flower-color-wrap,
+.flower-combo-wrap {
+  width: 100%;
+}
+.flower-mini-label {
+  display: block;
+  margin: 0 0 5px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.2;
+}
+#flowerComboInput,
+#flowerMobileSelect,
+#flowerColorSelect {
+  width: 100%;
+  min-height: 42px;
+}
+.flower-mobile-select {
+  display: block !important;
+}
+@media (max-width: 768px) {
+  .flower-combo-picker .combo-row {
+    grid-template-columns: 1fr;
+  }
+}
