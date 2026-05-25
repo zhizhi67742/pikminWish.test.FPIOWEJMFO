@@ -3015,16 +3015,16 @@ label textarea {
   box-shadow: 0 3px 10px rgba(0,0,0,.10);
 }
 
-/* 被選中的按鈕＝白底；未選中的按鈕＝深色 */
+/* 被選中的按鈕＝淺綠底；未選中的按鈕＝深色 */
 .order-filter-btn.active {
-  background: rgba(255,255,255,.92);
-  color: #465846;
-  border-color: rgba(80, 110, 80, .34);
-  box-shadow: 0 4px 12px rgba(255,255,255,.18);
+  background: #dcefd6;
+  color: #355235;
+  border-color: #b9d8af;
+  box-shadow: 0 4px 12px rgba(185,216,175,.28);
 }
 
 .order-filter-btn.active:hover {
-  background: rgba(255,255,255,1);
+  background: #e4f5de;
 }
 
 .order-filter-empty {
