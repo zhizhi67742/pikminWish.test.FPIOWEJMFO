@@ -1982,43 +1982,35 @@ document.addEventListener("DOMContentLoaded", initBackToTopBtn);
 window.addEventListener("load", initBackToTopBtn);
 
 
+
+
+
 /* ===== 訂單顯示篩選 ===== */
-const orderFilterState = {
+const orderFilterState = window.orderFilterState || {
   wishList: "all",
   pendingList: "all"
 };
+window.orderFilterState = orderFilterState;
 
 function getCurrentPikminUserName() {
-  const possibleKeys = [
-    "pikminNickname",
-    "nickname",
-    "userName",
-    "farmerName",
-    "pikminUserName",
-    "wishUserName",
-    "visitorName",
-    "displayName"
-  ];
+  return (localStorage.getItem("flowerWishNickname") || "").trim();
+}
 
-  for (const key of possibleKeys) {
-    const value = localStorage.getItem(key);
-    if (value && value.trim()) return value.trim();
-  }
+function normalizeOrderText(text) {
+  return (text || "").replace(/\s+/g, "");
+}
 
-  // fallback: search any localStorage value that looks like a short nickname
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    const value = localStorage.getItem(key);
-    if (
-      value &&
-      value.trim() &&
-      value.trim().length <= 20 &&
-      !value.includes("{") &&
-      !value.includes("[") &&
-      !value.includes("http")
-    ) {
-      return value.trim();
-    }
+function getFieldValueFromCard(card, labels) {
+  const text = normalizeOrderText(card.innerText || card.textContent || "");
+
+  for (const label of labels) {
+    const key = normalizeOrderText(label);
+    const start = text.indexOf(key);
+    if (start === -1) continue;
+
+    const after = text.slice(start + key.length);
+    const nextStop = after.search(/(花朵|花種|顏色|許願者|接單花農|花農|是否完成|時間|座標|完成分享|取消|刪除|我可以幫忙|已接單)/);
+    return nextStop === -1 ? after : after.slice(0, nextStop);
   }
 
   return "";
@@ -2027,13 +2019,19 @@ function getCurrentPikminUserName() {
 function cardBelongsToCurrentUser(card, listId, currentName) {
   if (!card || !currentName) return false;
 
-  const text = card.innerText || card.textContent || "";
-  const normalized = text.replace(/\s+/g, "");
+  const cleanName = normalizeOrderText(currentName);
 
-  // 許願區：通常是自己發出的願望卡，文字內會有許願者/暱稱
-  // 待完成區：通常是自己接單的卡，文字內會有花農/接單者
-  // 這裡保守用名字比對，不改原本資料結構。
-  return normalized.includes(currentName.replace(/\s+/g, ""));
+  if (listId === "wishList") {
+    const wishOwner = getFieldValueFromCard(card, ["許願者：", "許願者", "暱稱：", "暱稱"]);
+    return normalizeOrderText(wishOwner).includes(cleanName);
+  }
+
+  if (listId === "pendingList") {
+    const farmer = getFieldValueFromCard(card, ["接單花農：", "接單花農", "花農：", "花農"]);
+    return normalizeOrderText(farmer).includes(cleanName);
+  }
+
+  return false;
 }
 
 function applyOrderFilter(listId) {
@@ -2072,6 +2070,7 @@ function applyOrderFilter(listId) {
   }
 
   let shown = 0;
+
   cards.forEach(function (card) {
     const ok = cardBelongsToCurrentUser(card, listId, currentName);
     card.style.display = ok ? "" : "none";
@@ -2110,6 +2109,7 @@ function initOrderFilters() {
     const list = document.getElementById(id);
     if (!list || list.dataset.orderFilterObserved === "1") return;
     list.dataset.orderFilterObserved = "1";
+
     new MutationObserver(function () {
       applyOrderFilter(id);
     }).observe(list, { childList: true, subtree: true });
