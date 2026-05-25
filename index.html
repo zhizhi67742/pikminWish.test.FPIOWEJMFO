@@ -136,24 +136,22 @@ h1 {
 
 </style>
 <style>
-/* 手機板 LINE/DC 下拉箭頭改白色 */
-select.platform-select,
+/* select arrow fix */
+.platform-select,
 #socialTypeSelect {
-    color: #f5d76e !important;
-    background-color: #111827 !important;
-    -webkit-appearance: none !important;
-    appearance: none !important;
-    background-image:
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 14px center !important;
-    background-size: 14px !important;
-    padding-right: 40px !important;
-}
-
-select.platform-select::-ms-expand,
-#socialTypeSelect::-ms-expand {
-    display: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-color: #111827 !important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #ffffff 50%),
+    linear-gradient(135deg, #ffffff 50%, transparent 50%) !important;
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px) !important;
+  background-size: 6px 6px, 6px 6px !important;
+  background-repeat: no-repeat !important;
+  padding-right: 34px !important;
+  color: #f5d76e !important;
 }
 </style></head>
 <body>
