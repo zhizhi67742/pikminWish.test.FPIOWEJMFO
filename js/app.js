@@ -22,65 +22,6 @@ let selectedWishId = null;
 let selectedPendingId = null;
 let locallyDeletedWishKeys = new Set();
 
-let repeatWishResolver = null;
-
-function normalizeWishCompareText(value) {
-  return String(value || "").trim().replace(/\s+/g, "").toLowerCase();
-}
-
-function countSameActiveWishes(flower, currentNickname) {
-  const targetFlower = normalizeWishCompareText(flower);
-  const targetNickname = normalizeWishCompareText(currentNickname);
-  if (!targetFlower || !targetNickname) return 0;
-
-  return [...wishes, ...pending].filter(function (item) {
-    if (!item || item.isExample) return false;
-    const itemStatus = String(item.status || "wish").toLowerCase();
-    if (["done", "completed", "cancelled", "canceled"].includes(itemStatus)) return false;
-    return normalizeWishCompareText(item.flower) === targetFlower &&
-      normalizeWishCompareText(item.nickname) === targetNickname;
-  }).length;
-}
-
-function askRepeatWishConfirm(count) {
-  const modal = document.getElementById("repeatWishModal");
-  const message = document.getElementById("repeatWishMessage");
-
-  if (!modal) {
-    return Promise.resolve(window.confirm("你目前已有 " + count + " 筆相同願望，是否仍要重複許願？"));
-  }
-
-  if (message) {
-    message.textContent = "你目前已有 " + count + " 筆相同願望，是否仍要重複許願？";
-  }
-
-  modal.classList.add("show");
-
-  return new Promise(function (resolve) {
-    repeatWishResolver = resolve;
-  });
-}
-
-function closeRepeatWishModal(result) {
-  const modal = document.getElementById("repeatWishModal");
-  if (modal) modal.classList.remove("show");
-
-  if (repeatWishResolver) {
-    const resolve = repeatWishResolver;
-    repeatWishResolver = null;
-    resolve(Boolean(result));
-  }
-}
-
-function confirmRepeatWishSubmit() {
-  closeRepeatWishModal(true);
-}
-
-function cancelRepeatWishSubmit() {
-  closeRepeatWishModal(false);
-}
-
-
 function getCurrentNickname() {
   const savedNickname = localStorage.getItem("flowerWishNickname") || "";
   if (savedNickname.trim()) {
@@ -411,7 +352,156 @@ function saveNickname() {
   alert("暱稱已設定：" + nickname);
 }
 
-function addWish() {
+
+
+/* =========================
+   重複許願確認視窗
+========================= */
+let repeatWishResolver = null;
+let repeatWishPendingSubmit = false;
+
+function normalizeRepeatWishText(value) {
+  return String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function getRepeatWishCount(flower, nickname) {
+  const targetFlower = normalizeRepeatWishText(flower);
+  const targetNickname = normalizeRepeatWishText(nickname);
+  if (!targetFlower || !targetNickname) return 0;
+
+  const activeLists = [];
+  if (Array.isArray(wishes)) activeLists.push(...wishes);
+  if (Array.isArray(pending)) activeLists.push(...pending);
+
+  return activeLists.filter(function (wish) {
+    if (!wish || wish.isExample) return false;
+    const wishStatus = String(wish.status || "wish").toLowerCase();
+    if (wishStatus === "done" || wishStatus === "completed" || wishStatus === "cancelled" || wishStatus === "canceled") return false;
+    return normalizeRepeatWishText(wish.flower) === targetFlower && normalizeRepeatWishText(wish.nickname) === targetNickname;
+  }).length;
+}
+
+function ensureRepeatWishModal() {
+  if (document.getElementById("repeatWishModal")) return;
+
+  const style = document.createElement("style");
+  style.id = "repeatWishModalStyle";
+  style.textContent = `
+    .repeat-wish-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.48);
+      backdrop-filter: blur(3px);
+    }
+    .repeat-wish-modal.show { display: flex; }
+    .repeat-wish-box {
+      width: min(92vw, 420px);
+      border-radius: 22px;
+      padding: 22px 20px 18px;
+      background: linear-gradient(180deg, #fffdf2 0%, #edf8df 100%);
+      color: #28422c;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+      text-align: center;
+      border: 2px solid rgba(128, 169, 82, 0.55);
+    }
+    .repeat-wish-box h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.35;
+    }
+    .repeat-wish-box p {
+      margin: 0 0 18px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .repeat-wish-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .repeat-wish-actions button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .repeat-wish-submit {
+      background: #6f9f38;
+      color: white;
+    }
+    .repeat-wish-cancel {
+      background: rgba(255,255,255,0.86);
+      color: #395331;
+      border: 1px solid rgba(75, 111, 52, 0.25) !important;
+    }
+  `;
+  document.head.appendChild(style);
+
+  const modal = document.createElement("div");
+  modal.id = "repeatWishModal";
+  modal.className = "repeat-wish-modal";
+  modal.innerHTML = `
+    <div class="repeat-wish-box" role="dialog" aria-modal="true" aria-labelledby="repeatWishTitle">
+      <h3 id="repeatWishTitle">🌸 偵測到重複許願</h3>
+      <p id="repeatWishText">你目前已有相同願望，是否仍要重複許願？</p>
+      <div class="repeat-wish-actions">
+        <button type="button" class="repeat-wish-cancel" id="repeatWishCancelBtn">取消</button>
+        <button type="button" class="repeat-wish-submit" id="repeatWishSubmitBtn">仍然送出</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  document.getElementById("repeatWishCancelBtn").addEventListener("click", function () {
+    closeRepeatWishModal(false);
+  });
+  document.getElementById("repeatWishSubmitBtn").addEventListener("click", function () {
+    closeRepeatWishModal(true);
+  });
+  modal.addEventListener("click", function (event) {
+    if (event.target === modal) closeRepeatWishModal(false);
+  });
+}
+
+function closeRepeatWishModal(shouldSubmit) {
+  const modal = document.getElementById("repeatWishModal");
+  if (modal) modal.classList.remove("show");
+  repeatWishPendingSubmit = false;
+  if (typeof repeatWishResolver === "function") {
+    const resolver = repeatWishResolver;
+    repeatWishResolver = null;
+    resolver(!!shouldSubmit);
+  }
+}
+
+function askRepeatWishIfNeeded(flower, nickname) {
+  const count = getRepeatWishCount(flower, nickname);
+  if (count <= 0) return Promise.resolve(true);
+  if (repeatWishPendingSubmit) return Promise.resolve(false);
+
+  ensureRepeatWishModal();
+  repeatWishPendingSubmit = true;
+  const text = document.getElementById("repeatWishText");
+  if (text) {
+    text.textContent = `你目前已有 ${count} 筆相同願望，是否仍要重複許願？`;
+  }
+  const modal = document.getElementById("repeatWishModal");
+  if (modal) modal.classList.add("show");
+
+  return new Promise(function (resolve) {
+    repeatWishResolver = resolve;
+  });
+}
+
+async function addWish() {
   const flower = document.getElementById("flowerInput").value.trim();
   const message = document.getElementById("messageInput").value.trim();
 
@@ -426,6 +516,9 @@ function addWish() {
     alert("請輸入花種。");
     return;
   }
+
+  const canSubmitRepeatWish = await askRepeatWishIfNeeded(flower, nickname);
+  if (!canSubmitRepeatWish) return;
 
   const start = document.getElementById("startHour").value + ":" + document.getElementById("startMinute").value;
   const end = document.getElementById("endHour").value + ":" + document.getElementById("endMinute").value;
@@ -1853,18 +1946,15 @@ async function startFirebaseSync() {
       return;
     }
 
+    const canSubmitRepeatWish = await askRepeatWishIfNeeded(flower, nickname);
+    if (!canSubmitRepeatWish) return;
+
     const startHour = document.getElementById("startHour")?.value || "14";
     const startMinute = document.getElementById("startMinute")?.value || "00";
     const endHour = document.getElementById("endHour")?.value || "20";
     const endMinute = document.getElementById("endMinute")?.value || "00";
 
     const message = document.getElementById("messageInput")?.value || "";
-
-    const sameWishCount = countSameActiveWishes(flower, nickname);
-    if (sameWishCount > 0) {
-      const shouldSubmitRepeatWish = await askRepeatWishConfirm(sameWishCount);
-      if (!shouldSubmitRepeatWish) return;
-    }
 
     const now = new Date();
 
