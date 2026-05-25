@@ -2979,6 +2979,9 @@ label textarea {
 
 
 
+
+
+
 /* ===== 訂單顯示篩選 ===== */
 .order-filter-tabs {
   position: relative;
@@ -2996,10 +2999,10 @@ label textarea {
   pointer-events: auto;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  border: 1px solid rgba(80, 110, 80, .32);
+  border: 1px solid rgba(47, 79, 47, .95);
   border-radius: 999px;
-  background: rgba(255,255,255,.7);
-  color: #465846;
+  background: rgba(47, 79, 47, .95);
+  color: #fff;
   padding: 7px 12px;
   font-size: 13px;
   cursor: pointer;
@@ -3008,16 +3011,20 @@ label textarea {
 
 .order-filter-btn:hover {
   transform: translateY(-1px);
-  background: rgba(255,255,255,.95);
-  box-shadow: 0 3px 10px rgba(0,0,0,.08);
+  background: rgba(47, 79, 47, 1);
+  box-shadow: 0 3px 10px rgba(0,0,0,.10);
 }
 
-/* 選中的才是深色，白底代表未選 */
+/* 被選中的按鈕＝白底；未選中的按鈕＝深色 */
 .order-filter-btn.active {
-  background: rgba(47, 79, 47, .95);
-  color: #fff;
-  border-color: rgba(47, 79, 47, .95);
-  box-shadow: 0 4px 12px rgba(47, 79, 47, .18);
+  background: rgba(255,255,255,.92);
+  color: #465846;
+  border-color: rgba(80, 110, 80, .34);
+  box-shadow: 0 4px 12px rgba(255,255,255,.18);
+}
+
+.order-filter-btn.active:hover {
+  background: rgba(255,255,255,1);
 }
 
 .order-filter-empty {
