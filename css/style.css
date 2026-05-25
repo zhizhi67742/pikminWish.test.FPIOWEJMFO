@@ -3582,3 +3582,14 @@ h1 {
   pointer-events: auto !important;
   z-index: 5 !important;
 }
+
+
+/* single arrow fix: keep custom flower dropdown, hide browser/native input arrow */
+#flowerComboInput::-webkit-calendar-picker-indicator {
+  display: none !important;
+  opacity: 0 !important;
+}
+#flowerComboInput {
+  appearance: none;
+  -webkit-appearance: none;
+}
