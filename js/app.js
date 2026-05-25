@@ -2583,16 +2583,22 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
 })();
 
 
-/* final robust flower combo: one input + custom dropdown for desktop and mobile */
+
+/* final real flower combo: one input + body-level dropdown for desktop/mobile */
 function initFlowerPicker() {
   const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-  const dropdown = document.getElementById("flowerComboDropdown");
+  let dropdown = document.getElementById("flowerComboDropdown");
   const colorSelect = document.getElementById("flowerColorSelect");
   const flowerInput = document.getElementById("flowerInput");
   const datalist = document.getElementById("flowerComboList");
   const dropdownBtn = document.querySelector(".flower-dropdown-btn");
   const clearBtn = document.querySelector(".flower-clear-btn");
   if (!comboInput || !dropdown || !colorSelect || !flowerInput) return;
+
+  // Move the custom dropdown to <body>. This avoids desktop layouts/cards clipping the menu.
+  if (dropdown.parentElement !== document.body) {
+    document.body.appendChild(dropdown);
+  }
 
   const allColors = ["白", "黃", "紅", "藍"];
   const getFlowers = () => Array.isArray(flowerDex) && flowerDex.length ? flowerDex : DEFAULT_FLOWER_DEX;
@@ -2601,8 +2607,9 @@ function initFlowerPicker() {
   const findFlower = (name) => getFlowers().find((flower) => norm(flower.name) === norm(name));
   const filteredFlowers = () => {
     const keyword = norm(comboInput.value);
-    if (!keyword) return getFlowers();
-    return getFlowers().filter((flower) => norm(flower.name).includes(keyword) || norm(flower.subtitle || "").includes(keyword));
+    const list = getFlowers();
+    if (!keyword) return list;
+    return list.filter((flower) => norm(flower.name).includes(keyword) || norm(flower.subtitle || "").includes(keyword));
   };
 
   function syncHiddenFlower() {
@@ -2637,13 +2644,15 @@ function initFlowerPicker() {
     });
   }
 
-  function closeDropdown() {
-    dropdown.classList.remove("open", "is-open");
+  function positionDropdown() {
+    const rect = comboInput.getBoundingClientRect();
+    dropdown.style.left = rect.left + "px";
+    dropdown.style.top = (rect.bottom + 6) + "px";
+    dropdown.style.width = rect.width + "px";
   }
 
-  function openDropdown() {
-    renderDropdown();
-    dropdown.classList.add("open", "is-open");
+  function closeDropdown() {
+    dropdown.classList.remove("open", "is-open", "body-flower-dropdown-open");
   }
 
   function renderDropdown() {
@@ -2661,27 +2670,29 @@ function initFlowerPicker() {
       optionBtn.type = "button";
       optionBtn.className = "flower-combo-option";
       optionBtn.textContent = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
-      optionBtn.addEventListener("click", (event) => {
+      optionBtn.addEventListener("mousedown", (event) => {
         event.preventDefault();
         comboInput.value = flower.name;
         renderColors();
         closeDropdown();
-        comboInput.focus();
       });
       dropdown.appendChild(optionBtn);
     });
   }
 
-  comboInput.oninput = () => {
-    renderColors();
-    openDropdown();
-  };
+  function openDropdown() {
+    renderDropdown();
+    positionDropdown();
+    dropdown.classList.add("open", "is-open", "body-flower-dropdown-open");
+  }
+
+  comboInput.oninput = () => { renderColors(); openDropdown(); };
   comboInput.onfocus = openDropdown;
   comboInput.onclick = openDropdown;
   comboInput.onchange = renderColors;
   comboInput.onkeydown = (event) => {
     if (event.key === "Escape") closeDropdown();
-    if (event.key === "ArrowDown") openDropdown();
+    if (event.key === "ArrowDown") { event.preventDefault(); openDropdown(); }
   };
   colorSelect.onchange = syncHiddenFlower;
 
@@ -2696,6 +2707,7 @@ function initFlowerPicker() {
   if (clearBtn) {
     clearBtn.onclick = (event) => {
       event.preventDefault();
+      event.stopPropagation();
       comboInput.value = "";
       renderColors();
       openDropdown();
@@ -2703,19 +2715,32 @@ function initFlowerPicker() {
     };
   }
 
-  if (!window.__flowerComboFinalOutsideClick) {
-    document.addEventListener("click", (event) => {
-      const wrap = document.querySelector(".flower-combo-wrap");
+  if (!window.__flowerComboBodyOutsideClick) {
+    document.addEventListener("mousedown", (event) => {
+      const input = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
       const menu = document.getElementById("flowerComboDropdown");
-      if (wrap && menu && !wrap.contains(event.target)) menu.classList.remove("open", "is-open");
+      const arrow = document.querySelector(".flower-dropdown-btn");
+      const clear = document.querySelector(".flower-clear-btn");
+      if (!menu) return;
+      if (event.target === input || event.target === arrow || event.target === clear || menu.contains(event.target)) return;
+      menu.classList.remove("open", "is-open", "body-flower-dropdown-open");
     });
-    window.__flowerComboFinalOutsideClick = true;
+    window.addEventListener("resize", () => {
+      const menu = document.getElementById("flowerComboDropdown");
+      if (menu && menu.classList.contains("open")) {
+        const input = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
+        if (input) {
+          const rect = input.getBoundingClientRect();
+          menu.style.left = rect.left + "px";
+          menu.style.top = (rect.bottom + 6) + "px";
+          menu.style.width = rect.width + "px";
+        }
+      }
+    });
+    window.__flowerComboBodyOutsideClick = true;
   }
 
-  window.openFlowerComboDropdown = function () {
-    comboInput.focus();
-    openDropdown();
-  };
+  window.openFlowerComboDropdown = function () { comboInput.focus(); openDropdown(); };
   window.clearFlowerComboInput = function () {
     comboInput.value = "";
     renderColors();
@@ -2725,5 +2750,4 @@ function initFlowerPicker() {
 
   renderDatalist();
   renderColors();
-  renderDropdown();
 }

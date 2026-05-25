@@ -3522,3 +3522,35 @@ h1 {
     right: 34px !important;
   }
 }
+
+
+/* Real desktop dropdown fix: body-level menu cannot be clipped by form/card layout */
+#flowerComboDropdown.body-flower-dropdown-open {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  display: block !important;
+  max-height: 280px !important;
+  overflow-y: auto !important;
+  padding: 6px !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  border-radius: 14px !important;
+  background: rgba(23, 40, 33, 0.98) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.32) !important;
+}
+#flowerComboDropdown.body-flower-dropdown-open .flower-combo-option {
+  display: block !important;
+  width: 100% !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  padding: 9px 10px !important;
+  background: transparent !important;
+  color: rgba(255,255,255,0.94) !important;
+  text-align: left !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+}
+#flowerComboDropdown.body-flower-dropdown-open .flower-combo-option:hover,
+#flowerComboDropdown.body-flower-dropdown-open .flower-combo-option:focus {
+  background: rgba(161, 220, 161, 0.18) !important;
+  outline: none !important;
+}
