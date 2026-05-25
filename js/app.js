@@ -22,6 +22,65 @@ let selectedWishId = null;
 let selectedPendingId = null;
 let locallyDeletedWishKeys = new Set();
 
+let repeatWishResolver = null;
+
+function normalizeWishCompareText(value) {
+  return String(value || "").trim().replace(/\s+/g, "").toLowerCase();
+}
+
+function countSameActiveWishes(flower, currentNickname) {
+  const targetFlower = normalizeWishCompareText(flower);
+  const targetNickname = normalizeWishCompareText(currentNickname);
+  if (!targetFlower || !targetNickname) return 0;
+
+  return [...wishes, ...pending].filter(function (item) {
+    if (!item || item.isExample) return false;
+    const itemStatus = String(item.status || "wish").toLowerCase();
+    if (["done", "completed", "cancelled", "canceled"].includes(itemStatus)) return false;
+    return normalizeWishCompareText(item.flower) === targetFlower &&
+      normalizeWishCompareText(item.nickname) === targetNickname;
+  }).length;
+}
+
+function askRepeatWishConfirm(count) {
+  const modal = document.getElementById("repeatWishModal");
+  const message = document.getElementById("repeatWishMessage");
+
+  if (!modal) {
+    return Promise.resolve(window.confirm("你目前已有 " + count + " 筆相同願望，是否仍要重複許願？"));
+  }
+
+  if (message) {
+    message.textContent = "你目前已有 " + count + " 筆相同願望，是否仍要重複許願？";
+  }
+
+  modal.classList.add("show");
+
+  return new Promise(function (resolve) {
+    repeatWishResolver = resolve;
+  });
+}
+
+function closeRepeatWishModal(result) {
+  const modal = document.getElementById("repeatWishModal");
+  if (modal) modal.classList.remove("show");
+
+  if (repeatWishResolver) {
+    const resolve = repeatWishResolver;
+    repeatWishResolver = null;
+    resolve(Boolean(result));
+  }
+}
+
+function confirmRepeatWishSubmit() {
+  closeRepeatWishModal(true);
+}
+
+function cancelRepeatWishSubmit() {
+  closeRepeatWishModal(false);
+}
+
+
 function getCurrentNickname() {
   const savedNickname = localStorage.getItem("flowerWishNickname") || "";
   if (savedNickname.trim()) {
@@ -370,20 +429,6 @@ function addWish() {
 
   const start = document.getElementById("startHour").value + ":" + document.getElementById("startMinute").value;
   const end = document.getElementById("endHour").value + ":" + document.getElementById("endMinute").value;
-
-  const repeatCount = wishes.filter(function (wish) {
-    return !wish.isExample &&
-      wish.nickname === nickname &&
-      wish.flower === flower;
-  }).length;
-
-  if (repeatCount > 0) {
-    const shouldContinue = confirm("你目前已有 " + repeatCount + " 筆相同願望，是否仍要重複許願？");
-
-    if (!shouldContinue) {
-      return;
-    }
-  }
 
   wishes.push({
     id: Date.now(),
@@ -1814,6 +1859,12 @@ async function startFirebaseSync() {
     const endMinute = document.getElementById("endMinute")?.value || "00";
 
     const message = document.getElementById("messageInput")?.value || "";
+
+    const sameWishCount = countSameActiveWishes(flower, nickname);
+    if (sameWishCount > 0) {
+      const shouldSubmitRepeatWish = await askRepeatWishConfirm(sameWishCount);
+      if (!shouldSubmitRepeatWish) return;
+    }
 
     const now = new Date();
 
