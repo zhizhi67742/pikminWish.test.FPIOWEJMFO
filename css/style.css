@@ -3209,3 +3209,60 @@ label textarea {
 
 #enterWebsiteBtn{cursor:pointer;position:relative;z-index:2;}
 #nicknameGate.hidden-gate{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+
+
+/* ===== FIX: 目前暱稱膠囊不要覆蓋主標題 ===== */
+.hero,
+.hero-section,
+.main-hero,
+.header-hero,
+.landing-hero,
+.wish-hero {
+  position: relative;
+}
+
+.current-nickname-bar,
+.nickname-status,
+.nickname-pill,
+#currentNicknameBar {
+  position: static !important;
+  transform: none !important;
+  margin: 18px auto 0 !important;
+  width: fit-content !important;
+  max-width: min(92vw, 520px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  z-index: 2 !important;
+}
+
+.hero-title,
+.main-title,
+.site-title,
+h1 {
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 900px) {
+  .current-nickname-bar,
+  .nickname-status,
+  .nickname-pill,
+  #currentNicknameBar {
+    margin-top: 16px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .current-nickname-bar,
+  .nickname-status,
+  .nickname-pill,
+  #currentNicknameBar {
+    margin: 14px auto 0 !important;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+}
+
