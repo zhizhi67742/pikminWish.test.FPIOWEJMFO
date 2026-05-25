@@ -1980,3 +1980,144 @@ function initBackToTopBtn() {
 
 document.addEventListener("DOMContentLoaded", initBackToTopBtn);
 window.addEventListener("load", initBackToTopBtn);
+
+
+/* ===== 訂單顯示篩選 ===== */
+const orderFilterState = {
+  wishList: "all",
+  pendingList: "all"
+};
+
+function getCurrentPikminUserName() {
+  const possibleKeys = [
+    "pikminNickname",
+    "nickname",
+    "userName",
+    "farmerName",
+    "pikminUserName",
+    "wishUserName",
+    "visitorName",
+    "displayName"
+  ];
+
+  for (const key of possibleKeys) {
+    const value = localStorage.getItem(key);
+    if (value && value.trim()) return value.trim();
+  }
+
+  // fallback: search any localStorage value that looks like a short nickname
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    const value = localStorage.getItem(key);
+    if (
+      value &&
+      value.trim() &&
+      value.trim().length <= 20 &&
+      !value.includes("{") &&
+      !value.includes("[") &&
+      !value.includes("http")
+    ) {
+      return value.trim();
+    }
+  }
+
+  return "";
+}
+
+function cardBelongsToCurrentUser(card, listId, currentName) {
+  if (!card || !currentName) return false;
+
+  const text = card.innerText || card.textContent || "";
+  const normalized = text.replace(/\s+/g, "");
+
+  // 許願區：通常是自己發出的願望卡，文字內會有許願者/暱稱
+  // 待完成區：通常是自己接單的卡，文字內會有花農/接單者
+  // 這裡保守用名字比對，不改原本資料結構。
+  return normalized.includes(currentName.replace(/\s+/g, ""));
+}
+
+function applyOrderFilter(listId) {
+  const list = document.getElementById(listId);
+  if (!list) return;
+
+  const mode = orderFilterState[listId] || "all";
+  const cards = Array.from(list.children).filter(function (el) {
+    return !el.classList.contains("order-filter-empty");
+  });
+
+  list.querySelectorAll(".order-filter-empty").forEach(function (el) {
+    el.remove();
+  });
+
+  if (mode === "all") {
+    cards.forEach(function (card) {
+      card.style.display = "";
+    });
+    if (typeof refreshCollapseHeights === "function") refreshCollapseHeights();
+    return;
+  }
+
+  const currentName = getCurrentPikminUserName();
+
+  if (!currentName) {
+    cards.forEach(function (card) {
+      card.style.display = "none";
+    });
+    const empty = document.createElement("div");
+    empty.className = "order-filter-empty";
+    empty.textContent = "尚未設定暱稱，無法篩選自己的訂單。";
+    list.appendChild(empty);
+    if (typeof refreshCollapseHeights === "function") refreshCollapseHeights();
+    return;
+  }
+
+  let shown = 0;
+  cards.forEach(function (card) {
+    const ok = cardBelongsToCurrentUser(card, listId, currentName);
+    card.style.display = ok ? "" : "none";
+    if (ok) shown++;
+  });
+
+  if (shown === 0) {
+    const empty = document.createElement("div");
+    empty.className = "order-filter-empty";
+    empty.textContent = listId === "wishList" ? "目前沒有自己發的訂單。" : "目前沒有自己接的訂單。";
+    list.appendChild(empty);
+  }
+
+  if (typeof refreshCollapseHeights === "function") refreshCollapseHeights();
+}
+
+function initOrderFilters() {
+  document.querySelectorAll(".order-filter-btn").forEach(function (btn) {
+    if (btn.dataset.filterReady === "1") return;
+    btn.dataset.filterReady = "1";
+
+    btn.addEventListener("click", function () {
+      const listId = btn.getAttribute("data-filter-target");
+      const mode = btn.getAttribute("data-filter-mode") || "all";
+      orderFilterState[listId] = mode;
+
+      document.querySelectorAll('.order-filter-btn[data-filter-target="' + listId + '"]').forEach(function (sameBtn) {
+        sameBtn.classList.toggle("active", sameBtn === btn);
+      });
+
+      applyOrderFilter(listId);
+    });
+  });
+
+  ["wishList", "pendingList"].forEach(function (id) {
+    const list = document.getElementById(id);
+    if (!list || list.dataset.orderFilterObserved === "1") return;
+    list.dataset.orderFilterObserved = "1";
+    new MutationObserver(function () {
+      applyOrderFilter(id);
+    }).observe(list, { childList: true, subtree: true });
+  });
+
+  applyOrderFilter("wishList");
+  applyOrderFilter("pendingList");
+}
+
+document.addEventListener("DOMContentLoaded", initOrderFilters);
+window.addEventListener("load", initOrderFilters);

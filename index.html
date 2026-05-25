@@ -113,6 +113,10 @@
           <span>🌸 許願區</span>
           <span class="collapse-icon">▼</span>
         </button>
+        <div class="order-filter-tabs" data-filter-area="wishList">
+          <button type="button" class="order-filter-btn active" data-filter-target="wishList" data-filter-mode="all">顯示所有訂單</button>
+          <button type="button" class="order-filter-btn" data-filter-target="wishList" data-filter-mode="mine">僅顯示自己發的訂單</button>
+        </div>
       </section>
       <div id="wishList" class="card-grid collapse-content"></div>
 
@@ -121,6 +125,10 @@
           <span>🌱 待完成區</span>
           <span class="collapse-icon">▼</span>
         </button>
+        <div class="order-filter-tabs" data-filter-area="pendingList">
+          <button type="button" class="order-filter-btn active" data-filter-target="pendingList" data-filter-mode="all">顯示所有訂單</button>
+          <button type="button" class="order-filter-btn" data-filter-target="pendingList" data-filter-mode="mine">僅顯示自己接的訂單</button>
+        </div>
         <p>大家都看得到進度，但只有接單花農可以按「完成分享」。</p>
       </section>
       <div id="pendingList" class="card-grid collapse-content"></div>

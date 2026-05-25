@@ -2974,3 +2974,57 @@ label textarea {
     font-size: 18px !important;
   }
 }
+
+
+/* ===== 訂單顯示篩選 ===== */
+.order-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.order-filter-btn {
+  border: 1px solid rgba(80, 110, 80, .28);
+  border-radius: 999px;
+  background: rgba(255,255,255,.55);
+  color: inherit;
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.order-filter-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,.85);
+  box-shadow: 0 3px 10px rgba(0,0,0,.08);
+}
+
+.order-filter-btn.active {
+  background: rgba(47, 79, 47, .92);
+  color: #fff;
+  border-color: rgba(47, 79, 47, .92);
+}
+
+.order-filter-empty {
+  grid-column: 1 / -1;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.45);
+  text-align: center;
+  font-size: 14px;
+  opacity: .85;
+}
+
+@media (max-width: 768px) {
+  .order-filter-tabs {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .order-filter-btn {
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+}
