@@ -567,11 +567,10 @@ document.addEventListener("click", function (event) {
     return;
   }
 
-
-  const cancelTakeBtn = event.target.closest(".cancel-take-btn[data-cancel-pending-key]");
-  if (cancelTakeBtn && !cancelTakeBtn.disabled) {
+  const cancelBtn = event.target.closest(".cancel-btn[data-cancel-key]");
+  if (cancelBtn && !cancelBtn.disabled) {
     event.preventDefault();
-    cancelTakeOrder(cancelTakeBtn.dataset.cancelPendingKey);
+    cancelPendingOrder(cancelBtn.dataset.cancelKey);
     return;
   }
 
@@ -602,18 +601,48 @@ function bindDynamicButtons() {
     };
   });
 
-
-  document.querySelectorAll(".cancel-take-btn[data-cancel-pending-key]").forEach(function (btn) {
-    btn.onclick = function () {
-      cancelTakeOrder(btn.dataset.cancelPendingKey);
-    };
-  });
-
   document.querySelectorAll(".delete-btn[data-delete-wish]").forEach(function (btn) {
     btn.onclick = function () {
       deleteWish(btn.dataset.deleteWish);
     };
   });
+}
+
+
+function cancelPendingOrder(id) {
+  const item = pending.find(function (entry) {
+    return String(getWishKey(entry)) === String(id);
+  });
+
+  if (!item) return;
+
+  if (item.coords || item.coordinates || item.location || item.shareText) {
+    alert("已送出座標後不能取消接單");
+    return;
+  }
+
+  const reason = prompt("請輸入取消原因");
+  if (!reason || !reason.trim()) {
+    alert("請輸入取消原因");
+    return;
+  }
+
+  item.cancelReason = reason.trim();
+  item.status = "open";
+  item.farmer = "";
+  item.acceptedBy = "";
+  item.acceptedAt = null;
+
+  pending = pending.filter(function (entry) {
+    return String(getWishKey(entry)) !== String(id);
+  });
+
+  wishes.push(item);
+
+  saveData();
+  renderAll();
+
+  alert("已取消接單，訂單重新開放");
 }
 
 function deleteWish(id) {
@@ -755,89 +784,6 @@ function openDoneModal(id) {
 function closeDoneModal() {
   selectedPendingId = null;
   document.getElementById("doneModal").classList.remove("show");
-}
-
-
-function hasSharedLocation(item) {
-  if (!item) return false;
-  const fields = [
-    item.location,
-    item.shareLocation,
-    item.coordinate,
-    item.coordinates,
-    item.coord,
-    item.coords,
-    item.shareText,
-    item.harvestInfo
-  ];
-
-  return fields.some(function (value) {
-    return typeof value === "string" ? value.trim().length > 0 : Boolean(value);
-  });
-}
-
-async function cancelTakeOrder(id) {
-  const pendingIndex = pending.findIndex(function (item) {
-    return String(getWishKey(item)) === String(id);
-  });
-
-  if (pendingIndex === -1) return;
-
-  const item = pending[pendingIndex];
-
-  if (!isCurrentFarmer(item)) {
-    alert("只有接單花農可以取消接單。");
-    return;
-  }
-
-  if (hasSharedLocation(item)) {
-    alert("已送出座標後不能取消接單。");
-    return;
-  }
-
-  const reason = prompt("請輸入取消原因：");
-  if (reason === null) return;
-
-  const cleanReason = reason.trim();
-  if (!cleanReason) {
-    alert("請填寫取消原因，方便下一位花農了解狀況。");
-    return;
-  }
-
-  const reopenedWish = pending.splice(pendingIndex, 1)[0];
-  const cancelledFarmer = reopenedWish.farmer || reopenedWish.acceptedBy || getCurrentNickname() || "花農";
-
-  reopenedWish.farmer = "";
-  reopenedWish.acceptedBy = "";
-  reopenedWish.acceptedAt = "";
-  reopenedWish.status = "wish";
-  reopenedWish.cancelReason = cleanReason;
-  reopenedWish.cancelledBy = cancelledFarmer;
-  reopenedWish.cancelledAt = Date.now();
-
-  wishes.unshift(reopenedWish);
-
-  if (reopenedWish.firebaseId && window.firebaseDB && window.firebaseFns) {
-    const { updateDoc, doc } = window.firebaseFns;
-    try {
-      await updateDoc(doc(window.firebaseDB, "wishes", reopenedWish.firebaseId), {
-        farmer: "",
-        acceptedBy: "",
-        acceptedAt: "",
-        status: "wish",
-        cancelReason: cleanReason,
-        cancelledBy: cancelledFarmer,
-        cancelledAt: reopenedWish.cancelledAt
-      });
-    } catch (error) {
-      console.error("Firebase 取消接單同步失敗", error);
-      alert("本機已取消，但雲端同步失敗。請重新整理後確認訂單狀態。");
-    }
-  }
-
-  alert("已取消接單，訂單重新開放。\n取消原因：" + cleanReason);
-  saveData();
-  renderAll();
 }
 
 
@@ -1127,7 +1073,6 @@ function renderWishes() {
         <p>🕒 發願時間：${escapeHtml(wish.createdAt)}</p>
         <p>🌙 可收花時間：${escapeHtml(wish.timeRange)}</p>
         <p>💬 ${escapeHtml(wish.message)}</p>
-        ${wish.cancelReason ? `<p class="cancel-reason">⚠️ 上次取消原因：${escapeHtml(wish.cancelReason)}</p>` : ""}
         ${actionButton}
       </article>
     `;
@@ -1145,12 +1090,13 @@ function renderPending() {
 
   sortOldestFirst(pending).forEach(function (item) {
     const canComplete = isCurrentFarmer(item);
-    const pendingKey = getWishKey(item);
     const actionButton = canComplete
-      ? `<div class="pending-actions">
-          <button class="done-btn" type="button" data-pending-key="${escapeHtml(pendingKey)}">完成分享</button>
-          <button class="cancel-take-btn" type="button" data-cancel-pending-key="${escapeHtml(pendingKey)}">取消接單</button>
-        </div>`
+      ? `
+        <div class="wish-actions">
+          <button class="done-btn" type="button" data-pending-key="${escapeHtml(getWishKey(item))}">完成分享</button>
+          <button class="cancel-btn" type="button" data-cancel-key="${escapeHtml(getWishKey(item))}">取消接單</button>
+        </div>
+      `
       : `<button class="done-btn disabled-btn" type="button" disabled>等待花農完成分享</button>`;
 
     list.innerHTML += `
