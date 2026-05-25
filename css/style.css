@@ -1153,7 +1153,7 @@ label textarea {
 }
 
 .flower-picker-row.combo-row {
-  grid-template-columns: minmax(0, 1fr) minmax(96px, 0.34fr);
+  grid-template-columns: minmax(180px, 1fr) minmax(150px, 0.55fr) minmax(96px, 0.34fr);
   align-items: end;
 }
 
@@ -1166,23 +1166,18 @@ label textarea {
   width: 100%;
 }
 
-@media (max-width: 520px) {
-  .flower-picker-row {
-    grid-template-columns: 1fr;
-  }
-}
-
 .flower-mobile-select {
-  display: none;
+  display: block;
   width: 100%;
 }
 
 @media (max-width: 768px) {
-  .flower-combo-wrap {
-    display: none;
+  .flower-picker-row.combo-row,
+  .flower-picker-row {
+    grid-template-columns: 1fr;
   }
 
-  .flower-mobile-select {
+  .flower-combo-wrap {
     display: block;
   }
 }
