@@ -2161,7 +2161,7 @@ setTimeout(initOrderFilters, 500);
 window.enterWebsite = enterWebsite;
 
 document.addEventListener("DOMContentLoaded", function () {
-  const enterBtn = document.querySelector(".enter-btn");
+  const enterBtn = null; // disabled duplicate enter handler; index.html uses robust handler
   if (enterBtn) {
     enterBtn.addEventListener("click", function (e) {
       e.preventDefault();

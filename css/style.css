@@ -3206,3 +3206,6 @@ label textarea {
     padding: 0 9px !important;
   }
 }
+
+#enterWebsiteBtn{cursor:pointer;position:relative;z-index:2;}
+#nicknameGate.hidden-gate{display:none!important;visibility:hidden!important;pointer-events:none!important;}

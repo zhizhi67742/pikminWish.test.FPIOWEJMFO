@@ -511,7 +511,7 @@
         ※ 請使用 LINE 社群或 DC 暱稱，方便 @提醒
       </p>
 
-      <button class="enter-btn" onclick="enterWebsite()">
+      <button type="button" id="enterWebsiteBtn" class="enter-btn" onclick="return window.enterWebsite(event)">
         進入網站
       </button>
     </div>
@@ -629,6 +629,61 @@
   document.addEventListener("keydown", function(e){
     if(e.key === "Escape") closeTermsModal();
   });
+</script>
+
+
+<script>
+(function () {
+  function normalizeNickname(name) {
+    return String(name || "").trim().replace(/_(LINE|DC)$/i, "");
+  }
+
+  function closeNicknameGate() {
+    const gate = document.getElementById("nicknameGate");
+    if (!gate) return;
+    gate.classList.add("hidden-gate");
+    gate.style.setProperty("display", "none", "important");
+    gate.style.setProperty("visibility", "hidden", "important");
+    gate.style.setProperty("pointer-events", "none", "important");
+    document.body.style.overflow = "";
+  }
+
+  window.enterWebsite = function (event) {
+    if (event && typeof event.preventDefault === "function") event.preventDefault();
+    if (event && typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
+    if (event && typeof event.stopPropagation === "function") event.stopPropagation();
+
+    const input = document.getElementById("gateNicknameInput");
+    const select = document.getElementById("socialTypeSelect");
+    const raw = input ? input.value.trim() : "";
+    const platform = select ? select.value : "LINE";
+
+    if (!raw) {
+      alert("請輸入 LINE 社群或 DC 暱稱");
+      if (input) input.focus();
+      return false;
+    }
+
+    const finalNickname = normalizeNickname(raw) + "_" + platform;
+    localStorage.setItem("flowerWishNickname", finalNickname);
+    window.nickname = finalNickname;
+
+    const mainInput = document.getElementById("nicknameInput");
+    if (mainInput) mainInput.value = finalNickname;
+
+    const currentText = document.getElementById("currentNicknameText");
+    if (currentText) currentText.textContent = finalNickname;
+
+    closeNicknameGate();
+    return false;
+  };
+
+  document.addEventListener("click", function (event) {
+    const btn = event.target.closest && event.target.closest("#enterWebsiteBtn, .enter-btn");
+    if (!btn) return;
+    window.enterWebsite(event);
+  }, true);
+})();
 </script>
 
 </body>
