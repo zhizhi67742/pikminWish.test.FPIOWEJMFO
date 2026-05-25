@@ -875,7 +875,6 @@ function renderWishes() {
         <h3>🌸 ${escapeHtml(wish.flower)}</h3>
         <p>👤 暱稱：${escapeHtml(wish.nickname)}</p>
         <p>🕒 發願時間：${escapeHtml(wish.createdAt)}</p>
-        
 
         <p>🌙 可收花時間：${escapeHtml(wish.timeRange)}</p>
         <p>💬 ${escapeHtml(wish.message)}</p>
