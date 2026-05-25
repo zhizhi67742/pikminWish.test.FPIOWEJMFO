@@ -371,6 +371,25 @@ function addWish() {
   const start = document.getElementById("startHour").value + ":" + document.getElementById("startMinute").value;
   const end = document.getElementById("endHour").value + ":" + document.getElementById("endMinute").value;
 
+  const sameWishCount = wishes.filter(function (wish) {
+    return (
+      !wish.isExample &&
+      String(wish.nickname).trim() === String(nickname).trim() &&
+      String(wish.flower).trim() === String(flower).trim() &&
+      wish.status !== "done"
+    );
+  }).length;
+
+  if (sameWishCount > 0) {
+    const repeatConfirm = confirm(
+      "你目前已有 " + sameWishCount + " 筆相同願望，是否仍要重複許願？"
+    );
+
+    if (!repeatConfirm) {
+      return;
+    }
+  }
+
   wishes.push({
     id: Date.now(),
     flower: flower,
