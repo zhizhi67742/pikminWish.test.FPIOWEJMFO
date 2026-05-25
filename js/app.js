@@ -878,13 +878,6 @@ function renderWishes() {
         <h3>🌸 ${escapeHtml(wish.flower)}</h3>
         <p>👤 暱稱：${escapeHtml(wish.nickname)}</p>
         <p>🕒 發願時間：${escapeHtml(wish.createdAt)}</p>
-        ${wish.deleteAt ? `
-          <div class="${isEndingSoon(wish.deleteAt) ? "expire-banner warning" : "expire-banner"}">
-            ${isEndingSoon(wish.deleteAt) ? "⚠️ 即將自動刪除" : "🗑️ 自動刪除"}
-            ・${formatRemainTime(wish.deleteAt)}後
-          </div>
-        ` : ""}
-
         <p>🌙 可收花時間：${escapeHtml(wish.timeRange)}</p>
         <p>💬 ${escapeHtml(wish.message)}</p>
         ${actionButton}
