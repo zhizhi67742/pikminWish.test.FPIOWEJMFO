@@ -377,7 +377,7 @@ function addWish() {
     nickname: nickname,
     createdAt: formatNow(),
     timeRange: start + " - " + end,
-    deleteAt: getWishDeleteAtFromEndTime(end),
+    deleteAt: getWishDeleteAtThreeDaysLater(),
     message: message || "沒有留言",
     isExample: false
   });
@@ -875,7 +875,6 @@ function renderWishes() {
         <h3>🌸 ${escapeHtml(wish.flower)}</h3>
         <p>👤 暱稱：${escapeHtml(wish.nickname)}</p>
         <p>🕒 發願時間：${escapeHtml(wish.createdAt)}</p>
-
         <p>🌙 可收花時間：${escapeHtml(wish.timeRange)}</p>
         <p>💬 ${escapeHtml(wish.message)}</p>
         ${actionButton}
@@ -1319,6 +1318,10 @@ function getColorEmoji(color) {
   return map[color] || "🌸";
 }
 
+
+function getWishDeleteAtThreeDaysLater() {
+  return Date.now() + (3 * 24 * 60 * 60 * 1000);
+}
 
 function getWishDeleteAtFromEndTime(endTime) {
   const now = new Date();
@@ -1806,7 +1809,7 @@ async function startFirebaseSync() {
       createdAt: now.toLocaleString(),
       timeRange: `${startHour}:${startMinute} - ${endHour}:${endMinute}`,
       message,
-      deleteAt: getWishDeleteAtFromEndTime(`${endHour}:${endMinute}`),
+      deleteAt: getWishDeleteAtThreeDaysLater(),
       createdTimestamp: Date.now(),
       status: "wish"
     };
