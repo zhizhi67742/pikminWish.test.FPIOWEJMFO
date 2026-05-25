@@ -207,7 +207,7 @@ function buildTimeOptions() {
 
 function initFlowerPicker() {
   const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-  const dataList = document.getElementById("flowerOptions");
+  const dropdown = document.getElementById("flowerComboDropdown");
   const colorSelect = document.getElementById("flowerColorSelect");
   const flowerInput = document.getElementById("flowerInput");
 
@@ -230,15 +230,50 @@ function initFlowerPicker() {
     });
   }
 
-  function renderFlowerDatalist() {
-    if (!dataList) return;
-    dataList.innerHTML = "";
-    flowerDex.forEach(function (flower) {
-      const option = document.createElement("option");
-      option.value = flower.name;
-      option.label = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
-      dataList.appendChild(option);
+  function getFilteredFlowers() {
+    const keyword = normalizeText(comboInput.value);
+    if (!keyword) return flowerDex;
+    return flowerDex.filter(function (flower) {
+      const name = normalizeText(flower.name);
+      const subtitle = normalizeText(flower.subtitle || "");
+      return name.includes(keyword) || subtitle.includes(keyword);
     });
+  }
+
+  function closeDropdown() {
+    if (dropdown) dropdown.classList.remove("open");
+  }
+
+  function renderDropdown() {
+    if (!dropdown) return;
+    const flowers = getFilteredFlowers();
+    dropdown.innerHTML = "";
+
+    if (!flowers.length) {
+      const empty = document.createElement("div");
+      empty.className = "flower-combo-empty";
+      empty.textContent = "沒有符合的花種，可直接輸入自訂花名";
+      dropdown.appendChild(empty);
+      dropdown.classList.add("open");
+      return;
+    }
+
+    flowers.forEach(function (flower) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "flower-combo-option";
+      btn.setAttribute("role", "option");
+      btn.textContent = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
+      btn.addEventListener("mousedown", function (event) {
+        event.preventDefault();
+        comboInput.value = flower.name;
+        renderColorOptions();
+        closeDropdown();
+      });
+      dropdown.appendChild(btn);
+    });
+
+    dropdown.classList.add("open");
   }
 
   function renderColorOptions() {
@@ -268,11 +303,29 @@ function initFlowerPicker() {
     flowerInput.value = flowerName && color ? color + "色" + flowerName : "";
   }
 
-  comboInput.addEventListener("input", renderColorOptions);
-  comboInput.addEventListener("change", renderColorOptions);
-  colorSelect.addEventListener("change", updateSelectedFlowerInput);
+  comboInput.oninput = function () {
+    renderDropdown();
+    renderColorOptions();
+  };
+  comboInput.onfocus = function () {
+    renderDropdown();
+  };
+  comboInput.onkeydown = function (event) {
+    if (event.key === "Escape") closeDropdown();
+  };
+  colorSelect.onchange = updateSelectedFlowerInput;
 
-  renderFlowerDatalist();
+  if (!window.__flowerPickerOutsideClickAdded) {
+    document.addEventListener("mousedown", function (event) {
+      const wrap = document.querySelector(".flower-combo-wrap");
+      if (wrap && !wrap.contains(event.target)) {
+        const menu = document.getElementById("flowerComboDropdown");
+        if (menu) menu.classList.remove("open");
+      }
+    });
+    window.__flowerPickerOutsideClickAdded = true;
+  }
+
   renderColorOptions();
 }
 function clearFlowerComboInput() {
@@ -1520,17 +1573,7 @@ function clampDexValuesToLimits() {
 function wishFromDex(name, color) {
   const firstBtn = document.querySelectorAll(".nav-btn")[0];
   showSection("wish", firstBtn);
-  const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-  const mobileFlowerSelect = document.getElementById("flowerMobileSelect");
-  const colorSelect = document.getElementById("flowerColorSelect");
-  const flowerInput = document.getElementById("flowerInput");
-  if (comboInput) comboInput.value = name;
-  if (mobileFlowerSelect) mobileFlowerSelect.value = name;
-  if (colorSelect) colorSelect.value = color;
-  if (flowerInput) flowerInput.value = color + "色" + name;
-  if (comboInput) comboInput.dispatchEvent(new Event("change", { bubbles: true }));
-  if (colorSelect) colorSelect.value = color;
-  if (flowerInput) flowerInput.value = color + "色" + name;
+  document.getElementById("flowerInput").value = color + "色" + name;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 

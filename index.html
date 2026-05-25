@@ -353,10 +353,10 @@ h1 {
               <div class="flower-picker">
                 <div class="flower-picker-row combo-row">
                   <div class="clearable-input flower-combo-wrap">
-                    <input id="flowerComboInput" list="flowerOptions" type="text" placeholder="🔍 可直接輸入，也可從選單選花名" autocomplete="off" />
+                    <input id="flowerComboInput" type="text" placeholder="🔍 可輸入或點選花種" autocomplete="off" />
                     <button class="clear-input-btn" type="button" aria-label="清除花種搜尋" onclick="clearFlowerComboInput()">×</button>
+                    <div id="flowerComboDropdown" class="flower-combo-dropdown" role="listbox"></div>
                   </div>
-                  <datalist id="flowerOptions"></datalist>
                   <select id="flowerColorSelect" aria-label="選擇顏色"></select>
                 </div>
               </div>
