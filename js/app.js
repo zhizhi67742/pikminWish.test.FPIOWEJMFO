@@ -2172,7 +2172,7 @@ function enterWebsite() {
   }
 
   const cleanNickname = rawNickname.replace(/_(LINE|DC)$/i, "");
-  nickname = `${cleanNickname}_${platform}`;
+  nickname = cleanNickname;
   localStorage.setItem("flowerWishNickname", nickname);
 
   const nicknameInput = document.getElementById("nicknameInput");
@@ -2517,7 +2517,7 @@ function splitSavedNicknameForGate(savedNickname) {
   const match = text.match(/_(LINE|DC)$/i);
   return {
     name: match ? text.replace(/_(LINE|DC)$/i, "") : text,
-    platform: match ? match[1].toUpperCase() : "LINE"
+    platform: "LINE"
   };
 }
 
