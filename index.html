@@ -686,5 +686,57 @@
 })();
 </script>
 
+
+<script>
+(function () {
+  function splitSavedNicknameForGate(savedNickname) {
+    const text = String(savedNickname || "").trim();
+    const match = text.match(/_(LINE|DC)$/i);
+    return {
+      name: match ? text.replace(/_(LINE|DC)$/i, "") : text,
+      platform: match ? match[1].toUpperCase() : "LINE"
+    };
+  }
+
+  window.openNicknameModal = function () {
+    const gate = document.getElementById("nicknameGate");
+    if (!gate) return false;
+
+    const savedNickname = localStorage.getItem("flowerWishNickname") || "";
+    const parsed = splitSavedNicknameForGate(savedNickname);
+
+    const input = document.getElementById("gateNicknameInput");
+    const select = document.getElementById("socialTypeSelect");
+
+    if (input) input.value = parsed.name;
+    if (select) select.value = parsed.platform;
+
+    gate.classList.remove("hidden-gate");
+    gate.style.setProperty("display", "flex", "important");
+    gate.style.setProperty("visibility", "visible", "important");
+    gate.style.setProperty("pointer-events", "auto", "important");
+    document.body.style.overflow = "hidden";
+
+    setTimeout(function () {
+      if (input) input.focus();
+    }, 80);
+
+    return false;
+  };
+
+  window.openRuleModal = window.openNicknameModal;
+
+  window.updateNicknameDisplay = function () {
+    const currentText = document.getElementById("currentNicknameText");
+    const currentName = localStorage.getItem("flowerWishNickname") || "";
+    if (currentText) currentText.textContent = currentName || "未設定";
+  };
+
+  window.addEventListener("load", function () {
+    window.updateNicknameDisplay();
+  });
+})();
+</script>
+
 </body>
 </html>

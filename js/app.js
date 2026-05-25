@@ -2169,3 +2169,51 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+
+/* ===== FIX: 進站後「修改暱稱」可重新開啟 ===== */
+function splitSavedNicknameForGate(savedNickname) {
+  const text = String(savedNickname || "").trim();
+  const match = text.match(/_(LINE|DC)$/i);
+  return {
+    name: match ? text.replace(/_(LINE|DC)$/i, "") : text,
+    platform: match ? match[1].toUpperCase() : "LINE"
+  };
+}
+
+function showNicknameGateForEdit() {
+  const gate = document.getElementById("nicknameGate");
+  if (!gate) return;
+
+  const savedNickname = localStorage.getItem("flowerWishNickname") || "";
+  const parsed = splitSavedNicknameForGate(savedNickname);
+
+  const input = document.getElementById("gateNicknameInput");
+  const select = document.getElementById("socialTypeSelect");
+
+  if (input) input.value = parsed.name;
+  if (select) select.value = parsed.platform;
+
+  gate.classList.remove("hidden-gate");
+  gate.style.setProperty("display", "flex", "important");
+  gate.style.setProperty("visibility", "visible", "important");
+  gate.style.setProperty("pointer-events", "auto", "important");
+  document.body.style.overflow = "hidden";
+
+  setTimeout(function () {
+    if (input) input.focus();
+  }, 80);
+}
+
+window.openNicknameModal = showNicknameGateForEdit;
+window.openRuleModal = showNicknameGateForEdit;
+
+function updateCurrentNicknameBar() {
+  const nicknameText = document.getElementById("currentNicknameText");
+  if (!nicknameText) return;
+  const currentName = localStorage.getItem("flowerWishNickname") || nickname || "";
+  nicknameText.textContent = currentName || "未設定";
+}
+
+window.updateCurrentNicknameBar = updateCurrentNicknameBar;
+
