@@ -18,8 +18,90 @@
 }
 </style>
 
+
+<style>
+.floating-nav{
+  position:fixed;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.floating-nav button{
+  border:none;
+  border-radius:999px;
+  padding:10px 14px;
+  background:rgba(35,35,35,0.88);
+  color:#fff;
+  backdrop-filter:blur(8px);
+  cursor:pointer;
+  font-size:13px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.25);
+  transition:0.2s;
+}
+
+.floating-nav button:hover{
+  transform:scale(1.06);
+  background:rgba(60,60,60,0.95);
+}
+
+.collapsible-header{
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.collapse-icon{
+  font-size:14px;
+  opacity:0.85;
+}
+
+.collapsible-content{
+  overflow:hidden;
+  transition:max-height .35s ease, opacity .25s ease;
+}
+
+.collapsed .collapsible-content{
+  max-height:0 !important;
+  opacity:0;
+  pointer-events:none;
+}
+
+@media(max-width:768px){
+  .floating-nav{
+    right:8px;
+    bottom:14px;
+    top:auto;
+    transform:none;
+    flex-direction:row;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+    max-width:90vw;
+  }
+
+  .floating-nav button{
+    padding:8px 11px;
+    font-size:12px;
+  }
+}
+</style>
+
 </head>
 <body>
+
+<div class="floating-nav">
+  <button onclick="scrollToSection('wishPoolSection')">🌱 許願池</button>
+  <button onclick="scrollToSection('historySection')">📜 歷史</button>
+  <button onclick="scrollToSection('gallerySection')">🌸 圖鑑</button>
+  <button onclick="scrollToSection('updateSection')">📝 更新</button>
+</div>
+
   <div class="bg-decor decor-1">✨</div>
   <div class="bg-decor decor-2">🌸</div>
   <div class="bg-decor decor-3">🌱</div>
@@ -561,6 +643,39 @@
   document.addEventListener("keydown", function(e){
     if(e.key === "Escape") closeTermsModal();
   });
+</script>
+
+
+<script>
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  if(el){
+    el.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function toggleSection(id, header){
+  const section = document.getElementById(id);
+  if(!section) return;
+
+  section.classList.toggle('collapsed');
+
+  const icon = header.querySelector('.collapse-icon');
+  if(icon){
+    icon.textContent = section.classList.contains('collapsed') ? '▶' : '▼';
+  }
+
+  const content = section.querySelector('.collapsible-content');
+  if(content && !section.classList.contains('collapsed')){
+    content.style.maxHeight = content.scrollHeight + 'px';
+  }
+}
+
+window.addEventListener('load', ()=>{
+  document.querySelectorAll('.collapsible-content').forEach(el=>{
+    el.style.maxHeight = el.scrollHeight + 'px';
+  });
+});
 </script>
 
 </body>
