@@ -3554,3 +3554,31 @@ h1 {
   background: rgba(161, 220, 161, 0.18) !important;
   outline: none !important;
 }
+
+
+/* deploy fix 20260526: force flower dropdown visible on hosted desktop */
+.flower-combo-wrap { position: relative !important; overflow: visible !important; }
+.flower-picker, .flower-picker-row, .flower-field, .wish-form, .card, .panel { overflow: visible !important; }
+#flowerComboInput { padding-right: 58px !important; }
+#flowerComboDropdown.body-flower-dropdown-open,
+#flowerComboDropdown.open,
+.flower-combo-dropdown.body-flower-dropdown-open,
+.flower-combo-dropdown.open {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+#flowerComboDropdown {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  max-height: min(340px, 55vh) !important;
+  overflow-y: auto !important;
+}
+.flower-dropdown-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+  z-index: 5 !important;
+}

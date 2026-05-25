@@ -2751,3 +2751,203 @@ function initFlowerPicker() {
   renderDatalist();
   renderColors();
 }
+
+
+/* deploy fix 20260526: hosted desktop-safe flower dropdown */
+(function () {
+  const VERSION = "flower-dropdown-deploy-20260526-01";
+
+  function getFlowerList() {
+    if (Array.isArray(window.flowerDex) && window.flowerDex.length) return window.flowerDex;
+    if (typeof flowerDex !== "undefined" && Array.isArray(flowerDex) && flowerDex.length) return flowerDex;
+    if (typeof DEFAULT_FLOWER_DEX !== "undefined" && Array.isArray(DEFAULT_FLOWER_DEX)) return DEFAULT_FLOWER_DEX;
+    return [];
+  }
+
+  function normalize(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function forceInitFlowerCombo() {
+    const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
+    const colorSelect = document.getElementById("flowerColorSelect");
+    const flowerInput = document.getElementById("flowerInput");
+    const datalist = document.getElementById("flowerComboList");
+    const dropdownBtn = document.querySelector(".flower-dropdown-btn");
+    const clearBtn = document.querySelector(".flower-clear-btn");
+    if (!comboInput || !colorSelect || !flowerInput) return;
+
+    let dropdown = document.getElementById("flowerComboDropdown");
+    if (!dropdown) {
+      dropdown = document.createElement("div");
+      dropdown.id = "flowerComboDropdown";
+      dropdown.className = "flower-combo-dropdown";
+      dropdown.setAttribute("role", "listbox");
+    }
+    if (dropdown.parentElement !== document.body) document.body.appendChild(dropdown);
+    dropdown.dataset.version = VERSION;
+
+    const allColors = ["白", "黃", "紅", "藍"];
+    const typedName = () => comboInput.value.trim();
+    const list = () => getFlowerList();
+    const findFlower = (name) => list().find((flower) => normalize(flower.name) === normalize(name));
+    const filtered = () => {
+      const keyword = normalize(comboInput.value);
+      const flowers = list();
+      if (!keyword) return flowers;
+      return flowers.filter((flower) => normalize(flower.name).includes(keyword) || normalize(flower.subtitle || "").includes(keyword));
+    };
+
+    function syncHiddenFlower() {
+      const name = typedName();
+      const color = colorSelect.value;
+      flowerInput.value = name && color ? color + "色" + name : "";
+    }
+
+    function renderColors() {
+      const found = findFlower(typedName());
+      const colors = found && Array.isArray(found.colors) && found.colors.length ? found.colors : allColors;
+      const old = colorSelect.value;
+      colorSelect.innerHTML = "";
+      colors.forEach((color) => {
+        const option = document.createElement("option");
+        option.value = color;
+        option.textContent = color + "色";
+        colorSelect.appendChild(option);
+      });
+      if (colors.includes(old)) colorSelect.value = old;
+      syncHiddenFlower();
+    }
+
+    function renderDatalist() {
+      if (!datalist) return;
+      datalist.innerHTML = "";
+      list().forEach((flower) => {
+        const option = document.createElement("option");
+        option.value = flower.name;
+        if (flower.subtitle) option.label = flower.subtitle;
+        datalist.appendChild(option);
+      });
+    }
+
+    function positionDropdown() {
+      const rect = comboInput.getBoundingClientRect();
+      dropdown.style.left = Math.round(rect.left) + "px";
+      dropdown.style.top = Math.round(rect.bottom + 6) + "px";
+      dropdown.style.width = Math.round(rect.width) + "px";
+    }
+
+    function closeDropdown() {
+      dropdown.classList.remove("open", "is-open", "body-flower-dropdown-open");
+      dropdown.style.display = "none";
+    }
+
+    function renderDropdown() {
+      const flowers = filtered();
+      dropdown.innerHTML = "";
+      if (!flowers.length) {
+        const empty = document.createElement("div");
+        empty.className = "flower-combo-empty";
+        empty.textContent = "沒有符合的花種，可直接輸入自訂花名";
+        dropdown.appendChild(empty);
+        return;
+      }
+      flowers.forEach((flower) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "flower-combo-option";
+        button.setAttribute("role", "option");
+        button.textContent = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
+        button.addEventListener("pointerdown", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          comboInput.value = flower.name;
+          renderColors();
+          closeDropdown();
+          comboInput.focus();
+        });
+        dropdown.appendChild(button);
+      });
+    }
+
+    function openDropdown() {
+      renderDropdown();
+      positionDropdown();
+      dropdown.style.display = "block";
+      dropdown.classList.add("open", "is-open", "body-flower-dropdown-open");
+    }
+
+    comboInput.removeAttribute("readonly");
+    comboInput.setAttribute("autocomplete", "off");
+    comboInput.addEventListener("focus", openDropdown);
+    comboInput.addEventListener("click", openDropdown);
+    comboInput.addEventListener("pointerdown", () => setTimeout(openDropdown, 0));
+    comboInput.addEventListener("input", () => { renderColors(); openDropdown(); });
+    comboInput.addEventListener("change", renderColors);
+    comboInput.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeDropdown();
+      if (event.key === "ArrowDown") { event.preventDefault(); openDropdown(); }
+    });
+    colorSelect.addEventListener("change", syncHiddenFlower);
+
+    if (dropdownBtn) {
+      dropdownBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        comboInput.focus();
+        openDropdown();
+      });
+    }
+    if (clearBtn) {
+      clearBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        comboInput.value = "";
+        renderColors();
+        openDropdown();
+        comboInput.focus();
+      });
+    }
+
+    if (!window.__flowerComboDeployOutsideClick) {
+      document.addEventListener("pointerdown", (event) => {
+        const input = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
+        const menu = document.getElementById("flowerComboDropdown");
+        const arrow = document.querySelector(".flower-dropdown-btn");
+        const clear = document.querySelector(".flower-clear-btn");
+        if (!menu) return;
+        if (event.target === input || event.target === arrow || event.target === clear || menu.contains(event.target)) return;
+        menu.classList.remove("open", "is-open", "body-flower-dropdown-open");
+        menu.style.display = "none";
+      });
+      window.addEventListener("resize", () => {
+        const menu = document.getElementById("flowerComboDropdown");
+        if (menu && menu.classList.contains("open")) positionDropdown();
+      });
+      window.addEventListener("scroll", () => {
+        const menu = document.getElementById("flowerComboDropdown");
+        if (menu && menu.classList.contains("open")) positionDropdown();
+      }, true);
+      window.__flowerComboDeployOutsideClick = true;
+    }
+
+    window.openFlowerComboDropdown = function () { comboInput.focus(); openDropdown(); };
+    window.clearFlowerComboInput = function () {
+      comboInput.value = "";
+      renderColors();
+      openDropdown();
+      comboInput.focus();
+    };
+
+    renderDatalist();
+    renderColors();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", forceInitFlowerCombo);
+  } else {
+    forceInitFlowerCombo();
+  }
+  window.addEventListener("load", forceInitFlowerCombo);
+  setTimeout(forceInitFlowerCombo, 600);
+})();
