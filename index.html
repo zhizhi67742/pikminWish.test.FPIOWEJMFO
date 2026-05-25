@@ -350,24 +350,14 @@ h1 {
             <label class="flower-field">
               花種（必填）
               <input id="flowerInput" type="hidden" />
-              <div class="flower-picker flower-combo-picker">
+              <div class="flower-picker">
                 <div class="flower-picker-row combo-row">
                   <div class="clearable-input flower-combo-wrap">
-                    <span class="flower-mini-label">手動輸入花種</span>
-                    <input id="flowerComboInput" list="flowerOptions" type="text" placeholder="可直接輸入花名，例如：玫瑰" autocomplete="off" />
+                    <input id="flowerComboInput" list="flowerOptions" type="text" placeholder="🔍 輸入或點選花種" autocomplete="off" />
                     <button class="clear-input-btn" type="button" aria-label="清除花種搜尋" onclick="clearFlowerComboInput()">×</button>
+                    <datalist id="flowerOptions"></datalist>
                   </div>
-                  <div class="flower-select-wrap">
-                    <span class="flower-mini-label">或從選單選擇</span>
-                    <select id="flowerMobileSelect" class="flower-mobile-select" aria-label="選擇花種">
-                      <option value="">選擇花種</option>
-                    </select>
-                  </div>
-                  <div class="flower-color-wrap">
-                    <span class="flower-mini-label">顏色</span>
-                    <select id="flowerColorSelect" aria-label="選擇顏色"></select>
-                  </div>
-                  <datalist id="flowerOptions"></datalist>
+                  <select id="flowerColorSelect" aria-label="選擇顏色"></select>
                 </div>
               </div>
               <p class="flower-tip">

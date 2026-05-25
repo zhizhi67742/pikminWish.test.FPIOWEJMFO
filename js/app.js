@@ -207,7 +207,6 @@ function buildTimeOptions() {
 
 function initFlowerPicker() {
   const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-  const mobileFlowerSelect = document.getElementById("flowerMobileSelect");
   const dataList = document.getElementById("flowerOptions");
   const oldFlowerSelect = document.getElementById("flowerSelect");
   const colorSelect = document.getElementById("flowerColorSelect");
@@ -224,7 +223,6 @@ function initFlowerPicker() {
   function getTypedFlowerName() {
     const typed = comboInput.value.trim();
     if (typed) return typed;
-    if (mobileFlowerSelect && mobileFlowerSelect.value) return mobileFlowerSelect.value.trim();
     if (oldFlowerSelect && oldFlowerSelect.value) return oldFlowerSelect.value.trim();
     return "";
   }
@@ -268,7 +266,6 @@ function initFlowerPicker() {
 
   function renderLegacySelectIfNeeded() {
     renderFlowerSelectOptions(oldFlowerSelect, false);
-    renderFlowerSelectOptions(mobileFlowerSelect, true);
   }
 
   function renderColorOptions() {
@@ -299,17 +296,10 @@ function initFlowerPicker() {
   }
 
   comboInput.addEventListener("input", function () {
-    if (mobileFlowerSelect) mobileFlowerSelect.value = "";
     renderColorOptions();
   });
   comboInput.addEventListener("change", renderColorOptions);
 
-  if (mobileFlowerSelect) {
-    mobileFlowerSelect.addEventListener("change", function () {
-      comboInput.value = mobileFlowerSelect.value || "";
-      renderColorOptions();
-    });
-  }
 
   if (oldFlowerSelect) {
     oldFlowerSelect.addEventListener("change", function () {
@@ -324,31 +314,14 @@ function initFlowerPicker() {
   renderLegacySelectIfNeeded();
   renderColorOptions();
 }
-function syncFlowerPickerValue() {
-  const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-  const flowerSelect = document.getElementById("flowerMobileSelect") || document.getElementById("flowerSelect");
-  const colorSelect = document.getElementById("flowerColorSelect");
-  const flowerInput = document.getElementById("flowerInput");
-  if (!flowerInput || !colorSelect) return "";
-
-  const typedName = comboInput && comboInput.value ? comboInput.value.trim() : "";
-  const selectedName = flowerSelect && flowerSelect.value ? flowerSelect.value.trim() : "";
-  const flowerName = typedName || selectedName;
-  const color = colorSelect.value || "";
-  flowerInput.value = flowerName && color ? color + "色" + flowerName : "";
-  return flowerInput.value;
-}
-
 function clearFlowerComboInput() {
   const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-  const mobileFlowerSelect = document.getElementById("flowerMobileSelect");
   const flowerInput = document.getElementById("flowerInput");
   if (comboInput) {
     comboInput.value = "";
     comboInput.dispatchEvent(new Event("input", { bubbles: true }));
     comboInput.focus();
   }
-  if (mobileFlowerSelect) mobileFlowerSelect.value = "";
   if (flowerInput) flowerInput.value = "";
 }
 
@@ -544,7 +517,6 @@ function askRepeatWishIfNeeded(flower, nickname) {
 }
 
 async function addWish() {
-  syncFlowerPickerValue();
   const flower = document.getElementById("flowerInput").value.trim();
   const message = document.getElementById("messageInput").value.trim();
 
@@ -1588,11 +1560,9 @@ function wishFromDex(name, color) {
   const firstBtn = document.querySelectorAll(".nav-btn")[0];
   showSection("wish", firstBtn);
   const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
-  const mobileFlowerSelect = document.getElementById("flowerMobileSelect");
   const colorSelect = document.getElementById("flowerColorSelect");
   const flowerInput = document.getElementById("flowerInput");
   if (comboInput) comboInput.value = name;
-  if (mobileFlowerSelect) mobileFlowerSelect.value = name;
   if (colorSelect) colorSelect.value = color;
   if (flowerInput) flowerInput.value = color + "色" + name;
   if (comboInput) comboInput.dispatchEvent(new Event("change", { bubbles: true }));
@@ -2085,7 +2055,6 @@ async function startFirebaseSync() {
   const originalAddWish = window.addWish;
 
   window.addWish = async function () {
-    syncFlowerPickerValue();
     const flower = document.getElementById("flowerInput")?.value?.trim();
     const nickname = getCurrentNickname();
 
