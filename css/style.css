@@ -3533,81 +3533,72 @@ h1 {
 }
 
 
-/* 手機板 許願區＆待完成區 訂單選項並排 */
+/* ===== FINAL：手機板許願區＆待完成區的訂單選項強制並排 ===== */
 @media (max-width: 768px) {
-  .order-filter-tabs {
-    display: flex;
-    flex-wrap: nowrap;
-    width: 100%;
-    gap: 8px;
-  }
-
-  .order-filter-btn {
-    flex: 1;
-    width: 100%;
-    white-space: nowrap;
-    text-align: center;
-    font-size: 12px;
-    padding: 8px 6px;
-  }
-}
-
-
-/* === 手機板：許願區＆待完成區 訂單選項並排修正版 === */
-@media (max-width: 768px) {
-  #wishListSection .order-filter-tabs,
-  #acceptedListSection .order-filter-tabs,
-  #wishSection .order-filter-tabs,
-  #pendingSection .order-filter-tabs,
-  #wishListSection .filter-tabs,
-  #acceptedListSection .filter-tabs,
-  #wishSection .filter-tabs,
-  #pendingSection .filter-tabs,
-  .wish-section .order-filter-tabs,
-  .accepted-section .order-filter-tabs,
-  .wish-section .filter-tabs,
-  .accepted-section .filter-tabs,
-  .order-filter-tabs,
-  .order-filter-group {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 8px !important;
+  /* 只處理「許願區」「待完成區」兩組，不影響其他區塊 */
+  .order-filter-tabs[data-filter-area="wishList"],
+  .order-filter-tabs[data-filter-area="pendingList"] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 6px !important;
     width: 100% !important;
     max-width: 100% !important;
-    margin: 10px 0 14px !important;
+    margin: 8px 0 12px 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
   }
 
-  #wishListSection .order-filter-tabs button,
-  #acceptedListSection .order-filter-tabs button,
-  #wishSection .order-filter-tabs button,
-  #pendingSection .order-filter-tabs button,
-  #wishListSection .filter-tabs button,
-  #acceptedListSection .filter-tabs button,
-  #wishSection .filter-tabs button,
-  #pendingSection .filter-tabs button,
-  .wish-section .order-filter-tabs button,
-  .accepted-section .order-filter-tabs button,
-  .wish-section .filter-tabs button,
-  .accepted-section .filter-tabs button,
-  .order-filter-tabs button,
-  .order-filter-group button,
-  .order-filter-btn {
-    flex: 1 1 0 !important;
+  .order-filter-tabs[data-filter-area="wishList"] .order-filter-btn,
+  .order-filter-tabs[data-filter-area="pendingList"] .order-filter-btn {
+    width: 100% !important;
     min-width: 0 !important;
-    width: auto !important;
-    max-width: none !important;
+    max-width: 100% !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 4px !important;
+    margin: 0 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    white-space: nowrap !important;
-    text-align: center !important;
-    font-size: 12px !important;
-    line-height: 1.2 !important;
-    padding: 8px 6px !important;
     box-sizing: border-box !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+    font-size: 11px !important;
+    line-height: 1 !important;
+    letter-spacing: -0.4px !important;
+    border-radius: 999px !important;
+  }
+
+  .order-filter-tabs[data-filter-area="wishList"] .order-filter-btn:first-child,
+  .order-filter-tabs[data-filter-area="pendingList"] .order-filter-btn:first-child {
+    font-size: 11px !important;
+  }
+
+  .order-filter-tabs[data-filter-area="wishList"] .order-filter-btn:last-child,
+  .order-filter-tabs[data-filter-area="pendingList"] .order-filter-btn:last-child {
+    font-size: 10.5px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .order-filter-tabs[data-filter-area="wishList"],
+  .order-filter-tabs[data-filter-area="pendingList"] {
+    gap: 5px !important;
+  }
+
+  .order-filter-tabs[data-filter-area="wishList"] .order-filter-btn,
+  .order-filter-tabs[data-filter-area="pendingList"] .order-filter-btn {
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 0 3px !important;
+    font-size: 10px !important;
+    letter-spacing: -0.6px !important;
+  }
+
+  .order-filter-tabs[data-filter-area="wishList"] .order-filter-btn:last-child,
+  .order-filter-tabs[data-filter-area="pendingList"] .order-filter-btn:last-child {
+    font-size: 9.5px !important;
   }
 }
 
