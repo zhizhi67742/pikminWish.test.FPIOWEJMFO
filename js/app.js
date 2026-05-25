@@ -210,6 +210,7 @@ function initFlowerPicker() {
   const dropdown = document.getElementById("flowerComboDropdown");
   const colorSelect = document.getElementById("flowerColorSelect");
   const flowerInput = document.getElementById("flowerInput");
+  const datalist = document.getElementById("flowerComboList");
 
   if (!comboInput || !colorSelect || !flowerInput) return;
 
@@ -245,8 +246,17 @@ function initFlowerPicker() {
   }
 
   function renderDropdown() {
-    if (!dropdown) return;
     const flowers = getFilteredFlowers();
+    if (datalist) {
+      datalist.innerHTML = "";
+      flowers.forEach(function (flower) {
+        const option = document.createElement("option");
+        option.value = flower.name;
+        if (flower.subtitle) option.label = flower.subtitle;
+        datalist.appendChild(option);
+      });
+    }
+    if (!dropdown) return;
     dropdown.innerHTML = "";
 
     if (!flowers.length) {
@@ -310,8 +320,22 @@ function initFlowerPicker() {
   comboInput.onfocus = function () {
     renderDropdown();
   };
+  comboInput.onclick = function () {
+    renderDropdown();
+  };
+  comboInput.addEventListener("pointerdown", function () {
+    setTimeout(renderDropdown, 0);
+  });
+  window.openFlowerComboDropdown = function () {
+    comboInput.focus();
+    renderDropdown();
+  };
   comboInput.onkeydown = function (event) {
     if (event.key === "Escape") closeDropdown();
+  };
+  comboInput.onchange = function () {
+    renderColorOptions();
+    updateSelectedFlowerInput();
   };
   colorSelect.onchange = updateSelectedFlowerInput;
 

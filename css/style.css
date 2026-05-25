@@ -378,7 +378,7 @@ label textarea {
 
 .coord-input {
   min-height: 135px;
-  max-height: 220px;
+  max-height: 280px;
   resize: vertical;
   line-height: 1.65;
   white-space: pre-wrap;
@@ -694,7 +694,7 @@ label textarea {
 
 .clearable-input input {
   width: 100%;
-  padding-right: 38px !important;
+  padding-right: 64px !important;
 }
 
 .clear-input-btn {
@@ -717,6 +717,34 @@ label textarea {
   cursor: pointer;
 }
 
+
+.flower-dropdown-btn {
+  position: absolute;
+  right: 38px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.86);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.flower-dropdown-btn:hover {
+  transform: translateY(-50%) !important;
+  background: rgba(161,220,161,0.24);
+  color: #dfffdc;
+}
+
 .clear-input-btn:hover {
   transform: translateY(-50%) !important;
   background: rgba(255,217,102,0.24);
@@ -737,7 +765,7 @@ label textarea {
   left: 0;
   right: 0;
   top: calc(100% + 6px);
-  z-index: 60;
+  z-index: 9999;
   display: none;
   max-height: 220px;
   overflow-y: auto;
