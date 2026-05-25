@@ -1005,6 +1005,9 @@ function addLocalWishHistory(record) {
   }
 }
 
+let historyPage = 1;
+const HISTORY_PAGE_SIZE = 50;
+
 function renderWishHistory() {
   const list = document.getElementById("wishHistoryList");
   if (!list) return;
@@ -1019,7 +1022,7 @@ function renderWishHistory() {
   });
 
   records.sort(function (a, b) {
-    return getHistorySortTime(a) - getHistorySortTime(b);
+    return getHistorySortTime(b) - getHistorySortTime(a);
   });
 
   if (records.length === 0) {
@@ -1027,9 +1030,34 @@ function renderWishHistory() {
     return;
   }
 
-  list.innerHTML = header + records.map(function (item) {
+  const totalPages = Math.max(1, Math.ceil(records.length / HISTORY_PAGE_SIZE));
+
+  if (historyPage > totalPages) {
+    historyPage = totalPages;
+  }
+
+  const startIndex = (historyPage - 1) * HISTORY_PAGE_SIZE;
+  const pagedRecords = records.slice(startIndex, startIndex + HISTORY_PAGE_SIZE);
+
+  const pagination = totalPages > 1
+    ? `<div class="history-pagination">
+        <button onclick="changeHistoryPage(-1)" ${historyPage === 1 ? "disabled" : ""}>上一頁</button>
+        <span>第 ${historyPage} / ${totalPages} 頁</span>
+        <button onclick="changeHistoryPage(1)" ${historyPage === totalPages ? "disabled" : ""}>下一頁</button>
+      </div>`
+    : "";
+
+  list.innerHTML = header + pagedRecords.map(function (item) {
     return `<div class="wish-history-item">${escapeHtml(item.flower || "花朵")}｜${escapeHtml(item.farmer || "花農")} → ${escapeHtml(item.requester || "許願者")}｜${escapeHtml(item.status || "已完成")}｜${escapeHtml(item.time || "")}</div>`;
-  }).join("");
+  }).join("") + pagination;
+}
+
+function changeHistoryPage(direction) {
+  historyPage += direction;
+
+  if (historyPage < 1) historyPage = 1;
+
+  renderWishHistory();
 }
 
 async function syncWishHistoryToCloud(record) {
