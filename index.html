@@ -452,11 +452,18 @@
     <div class="nickname-input-wrap">
       <label>輸入 LINE 社群或Dc暱稱</label>
 
-      <input
-        type="text"
-        id="gateNicknameInput"
-        placeholder="請輸入 LINE 社群或Dc暱稱"
-      />
+      <div class="nickname-row">
+        <select id="socialTypeSelect">
+          <option value="LINE">LINE</option>
+          <option value="DC">DC</option>
+        </select>
+
+        <input
+          type="text"
+          id="gateNicknameInput"
+          placeholder="請輸入暱稱"
+        />
+      </div>
 
       <p class="nickname-tip">
         ※ 請使用 LINE 社群或Dc暱稱，方便 @提醒

@@ -1822,11 +1822,10 @@ async function startFirebaseSync() {
 
 function enterWebsite() {
   const input = document.getElementById("gateNicknameInput");
-  nickname = input ? input.value.trim() : "";
+  nickname = input.value.trim();
 
   if (!nickname) {
     alert("請輸入 LINE 社群暱稱");
-    if (input) input.focus();
     return;
   }
 
@@ -1837,12 +1836,7 @@ function enterWebsite() {
     nicknameInput.value = nickname;
   }
 
-  const gate = document.getElementById("nicknameGate");
-  if (gate) {
-    gate.classList.add("hidden-gate");
-    gate.setAttribute("aria-hidden", "true");
-  }
-  document.body.style.overflow = "";
+  document.getElementById("nicknameGate").classList.add("hidden-gate");
 
   if (window.firebaseDB && window.firebaseFns) {
     loadDexFromCloud(nickname);
