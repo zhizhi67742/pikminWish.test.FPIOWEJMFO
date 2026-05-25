@@ -3049,3 +3049,75 @@ label textarea {
     font-size: 12px;
   }
 }
+
+/* ===== FIX v1.1.0：暱稱規則視窗高度修正 =====
+   避免手機或視窗高度較小時，只看得到暱稱輸入，進入網站按鈕被裁掉。 */
+.nickname-modal {
+  display: flex !important;
+  flex-direction: column !important;
+  max-height: min(88vh, 760px) !important;
+  overflow: hidden !important;
+}
+
+.nickname-modal .rule-scroll {
+  flex: 1 1 auto !important;
+  min-height: 120px !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nickname-input-wrap {
+  flex: 0 0 auto !important;
+}
+
+.enter-btn {
+  display: block !important;
+  width: 100% !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+@media (max-height: 720px) {
+  .nickname-gate {
+    align-items: flex-start !important;
+    padding: 10px !important;
+    overflow-y: auto !important;
+  }
+
+  .nickname-modal {
+    max-height: calc(100dvh - 20px) !important;
+    padding: 18px !important;
+  }
+
+  .nickname-modal h1 {
+    font-size: 22px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .nickname-modal .rule-scroll {
+    min-height: 90px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .rule-section {
+    margin-bottom: 14px !important;
+  }
+
+  .rule-section li {
+    margin-bottom: 6px !important;
+    line-height: 1.45 !important;
+  }
+
+  .nickname-input-wrap input {
+    padding: 11px 14px !important;
+  }
+
+  .nickname-tip {
+    margin-bottom: 10px !important;
+  }
+
+  .enter-btn {
+    padding: 13px !important;
+  }
+}
