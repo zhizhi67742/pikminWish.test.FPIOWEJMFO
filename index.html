@@ -18,62 +18,15 @@
 }
 </style>
 
-
-<style>
-.collapsible-header{
-cursor:pointer;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:10px 0;
-}
-
-.collapsible-content{
-overflow:hidden;
-transition:max-height .3s ease;
-}
-
-.collapsed .collapsible-content{
-max-height:0!important;
-}
-
-.floating-nav{
-position:fixed;
-right:14px;
-top:50%;
-transform:translateY(-50%);
-z-index:9999;
-display:flex;
-flex-direction:column;
-gap:8px;
-}
-
-.floating-nav button{
-border:none;
-border-radius:999px;
-padding:10px 14px;
-background:#2d2d2dde;
-color:white;
-cursor:pointer;
-}
-
-@media(max-width:768px){
-.floating-nav{
-bottom:12px;
-top:auto;
-transform:none;
-right:8px;
-flex-direction:row;
-}
-.floating-nav button{
-padding:8px 10px;
-font-size:12px;
-}
-}
-</style>
-
 </head>
 <body>
+  <div class="quick-floating-nav" id="quickFloatingNav" aria-label="快速切換">
+    <button type="button" onclick="quickGoSection('wish')">🌱 許願池</button>
+    <button type="button" onclick="quickGoSection('history')">🕰️ 歷史</button>
+    <button type="button" onclick="quickGoSection('dex')">🌸 圖鑑</button>
+    <button type="button" onclick="quickGoSection('changelog')">📜 更新</button>
+  </div>
+
   <div class="bg-decor decor-1">✨</div>
   <div class="bg-decor decor-2">🌸</div>
   <div class="bg-decor decor-3">🌱</div>
@@ -106,16 +59,10 @@ font-size:12px;
   </header>
 
   <main class="container">
-    <section id="doneSection" id="pendingSection" id="wishPoolSection" id="wish" class="page-section active">
-<div class="collapsible-header" onclick="toggleSection('wishPoolSection', this)">
-<h2>🌱 新增願望</h2>
-<span class="collapse-icon">▼</span>
-</div>
-<div class="collapsible-content">
-
+    <section id="wish" class="page-section active">
 
       <section class="panel">
-        
+        <h2>🌱 新增願望</h2>
 
         <div class="form-grid">
           <div class="wish-top-fields">
@@ -164,26 +111,33 @@ font-size:12px;
         </label>
 
         <button class="primary-btn" onclick="addWish()">🌱 新增願望卡</button>
-      
-</div>
-</section>
-
-      <section class="section-title">
-        <h2>🌸 許願區</h2>
       </section>
-      <div id="wishList" class="card-grid"></div>
 
-      <section class="section-title">
-        <h2>🌱 待完成區</h2>
+      <section class="section-title collapsible-title">
+        <button type="button" class="collapse-toggle" onclick="toggleWishArea('wishList', this)" aria-expanded="true">
+          <span>🌸 許願區</span>
+          <span class="collapse-arrow">▼</span>
+        </button>
+      </section>
+      <div id="wishList" class="card-grid collapsible-area"></div>
+
+      <section class="section-title collapsible-title">
+        <button type="button" class="collapse-toggle" onclick="toggleWishArea('pendingList', this)" aria-expanded="true">
+          <span>🌱 待完成區</span>
+          <span class="collapse-arrow">▼</span>
+        </button>
         <p>大家都看得到進度，但只有接單花農可以按「完成分享」。</p>
       </section>
-      <div id="pendingList" class="card-grid"></div>
+      <div id="pendingList" class="card-grid collapsible-area"></div>
 
-      <section class="section-title">
-        <h2>✨ 已完成區</h2>
+      <section class="section-title collapsible-title">
+        <button type="button" class="collapse-toggle" onclick="toggleWishArea('doneList', this)" aria-expanded="true">
+          <span>✨ 已完成區</span>
+          <span class="collapse-arrow">▼</span>
+        </button>
         <p>分享地點支援多行座標，完成後 1 小時自動刪除。</p>
       </section>
-      <div id="doneList" class="card-grid"></div>
+      <div id="doneList" class="card-grid collapsible-area"></div>
     </section>
 <section id="history" class="page-section">
       <section class="panel">
@@ -623,35 +577,6 @@ font-size:12px;
   document.addEventListener("keydown", function(e){
     if(e.key === "Escape") closeTermsModal();
   });
-</script>
-
-
-<script>
-function scrollToSection(id){
- const el=document.getElementById(id);
- if(el) el.scrollIntoView({behavior:'smooth'});
-}
-
-function toggleSection(id,header){
- const sec=document.getElementById(id);
- sec.classList.toggle('collapsed');
- const content=sec.querySelector('.collapsible-content');
- const icon=header.querySelector('.collapse-icon');
-
- if(sec.classList.contains('collapsed')){
-   content.style.maxHeight='0px';
-   icon.textContent='▶';
- }else{
-   content.style.maxHeight=content.scrollHeight+'px';
-   icon.textContent='▼';
- }
-}
-
-window.addEventListener('load',()=>{
- document.querySelectorAll('.collapsible-content').forEach(el=>{
-   el.style.maxHeight=el.scrollHeight+'px';
- });
-});
 </script>
 
 </body>

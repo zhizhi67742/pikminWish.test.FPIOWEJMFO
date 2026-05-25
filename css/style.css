@@ -2867,3 +2867,117 @@ label textarea {
     width: 100%;
   }
 }
+
+
+/* ===== v1.1.0 add: 大區塊折疊 + 右側快速切換 ===== */
+.collapsible-title {
+  position: relative;
+}
+
+.collapse-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+}
+
+.collapse-toggle span:first-child {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.collapse-arrow {
+  flex: 0 0 auto;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.55);
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  font-size: 13px;
+  transition: transform .2s ease, background .2s ease;
+}
+
+.collapse-toggle:hover .collapse-arrow {
+  background: rgba(255,255,255,.85);
+}
+
+.collapsible-area {
+  overflow: hidden;
+  transition: max-height .28s ease, opacity .22s ease, margin-top .22s ease;
+}
+
+.collapsible-area.is-collapsed {
+  max-height: 0 !important;
+  opacity: 0;
+  margin-top: 0 !important;
+  pointer-events: none;
+}
+
+.quick-floating-nav {
+  position: fixed;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quick-floating-nav button {
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: rgba(39, 54, 39, .86);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 5px 16px rgba(0,0,0,.18);
+  backdrop-filter: blur(8px);
+  transition: transform .18s ease, background .18s ease;
+  white-space: nowrap;
+}
+
+.quick-floating-nav button:hover {
+  transform: translateX(-2px) scale(1.03);
+  background: rgba(39, 54, 39, .96);
+}
+
+@media (max-width: 768px) {
+  .quick-floating-nav {
+    right: 8px;
+    bottom: 12px;
+    top: auto;
+    transform: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: calc(100vw - 16px);
+    pointer-events: none;
+  }
+
+  .quick-floating-nav button {
+    pointer-events: auto;
+    padding: 8px 9px;
+    font-size: 11px;
+  }
+
+  .collapse-arrow {
+    min-width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+}

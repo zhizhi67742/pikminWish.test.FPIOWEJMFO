@@ -1910,3 +1910,62 @@ enterWebsite = async function(...args) {
 window.addEventListener("load", () => {
   setTimeout(updateNicknameDisplay, 300);
 });
+
+
+/* ===== v1.1.0 add: 大區塊折疊 + 右側快速切換 ===== */
+function updateCollapsibleHeight(target) {
+  if (!target || target.classList.contains("is-collapsed")) return;
+  target.style.maxHeight = target.scrollHeight + "px";
+}
+
+function refreshCollapsibleAreas() {
+  ["wishList", "pendingList", "doneList"].forEach(function (id) {
+    updateCollapsibleHeight(document.getElementById(id));
+  });
+}
+
+function toggleWishArea(targetId, btn) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+
+  const willCollapse = !target.classList.contains("is-collapsed");
+  const arrow = btn ? btn.querySelector(".collapse-arrow") : null;
+
+  if (willCollapse) {
+    target.style.maxHeight = target.scrollHeight + "px";
+    requestAnimationFrame(function () {
+      target.classList.add("is-collapsed");
+      target.style.maxHeight = "0px";
+    });
+    if (btn) btn.setAttribute("aria-expanded", "false");
+    if (arrow) arrow.textContent = "▶";
+  } else {
+    target.classList.remove("is-collapsed");
+    target.style.maxHeight = target.scrollHeight + "px";
+    if (btn) btn.setAttribute("aria-expanded", "true");
+    if (arrow) arrow.textContent = "▼";
+  }
+}
+
+function quickGoSection(sectionId) {
+  const navBtn = document.querySelector(".main-nav .nav-btn[onclick*=\"'" + sectionId + "'\"]");
+  showSection(sectionId, navBtn || document.querySelector(".main-nav .nav-btn"));
+  const target = document.getElementById(sectionId);
+  if (target) {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+window.addEventListener("load", refreshCollapsibleAreas);
+window.addEventListener("resize", refreshCollapsibleAreas);
+
+const collapsibleObserver = new MutationObserver(refreshCollapsibleAreas);
+window.addEventListener("load", function () {
+  ["wishList", "pendingList", "doneList"].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) {
+      collapsibleObserver.observe(el, { childList: true, subtree: true });
+      updateCollapsibleHeight(el);
+    }
+  });
+});
