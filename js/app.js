@@ -2578,36 +2578,22 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
 
   function applyDropdownPosition(input, dropdown) {
     if (!input || !dropdown) return;
-
-    // 將下拉選單掛到 body，使用畫面座標貼齊輸入框。
-    // 這樣電腦版與手機版都不會被表單 grid / overflow / transform 影響而亂飄。
-    if (dropdown.parentElement !== document.body) {
-      document.body.appendChild(dropdown);
+    const wrap = input.closest(".flower-combo-wrap") || input.parentElement;
+    if (wrap && dropdown.parentElement !== wrap) {
+      wrap.appendChild(dropdown);
     }
-
-    const rect = input.getBoundingClientRect();
-    const gap = 6;
-    const viewportPadding = 10;
-    const maxWidth = Math.max(220, window.innerWidth - viewportPadding * 2);
-    const width = Math.min(rect.width, maxWidth);
-    const left = Math.min(
-      Math.max(viewportPadding, rect.left),
-      Math.max(viewportPadding, window.innerWidth - width - viewportPadding)
-    );
-    const spaceBelow = window.innerHeight - rect.bottom - viewportPadding - gap;
-    const spaceAbove = rect.top - viewportPadding - gap;
-    const openUp = spaceBelow < 180 && spaceAbove > spaceBelow;
-    const maxHeight = Math.max(150, Math.min(260, openUp ? spaceAbove : spaceBelow));
-    const top = openUp ? Math.max(viewportPadding, rect.top - maxHeight - gap) : rect.bottom + gap;
-
-    dropdown.style.position = "fixed";
-    dropdown.style.left = left + "px";
+    if (wrap) {
+      wrap.style.position = "relative";
+      wrap.style.overflow = "visible";
+    }
+    dropdown.style.position = "absolute";
+    dropdown.style.left = "0";
     dropdown.style.right = "auto";
-    dropdown.style.top = top + "px";
-    dropdown.style.width = width + "px";
-    dropdown.style.maxHeight = maxHeight + "px";
+    dropdown.style.top = (input.offsetHeight + 6) + "px";
+    dropdown.style.width = input.offsetWidth + "px";
+    dropdown.style.maxHeight = "260px";
     dropdown.style.zIndex = "999999";
-    dropdown.style.boxSizing = "border-box";
+    dropdown.style.transform = "none";
   }
 
   function installFlowerDeployDropdownFix() {
@@ -2706,9 +2692,6 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
     window.addEventListener("resize", function () {
       if (dropdown.classList.contains("open")) applyDropdownPosition(input, dropdown);
     });
-    window.addEventListener("scroll", function () {
-      if (dropdown.classList.contains("open")) applyDropdownPosition(input, dropdown);
-    }, true);
 
     document.addEventListener("mousedown", function (event) {
       if (event.target === input || dropdown.contains(event.target)) return;

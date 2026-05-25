@@ -3486,35 +3486,48 @@ h1 {
 }
 
 
-/* ===== FINAL FIX: 花種下拉選單貼齊輸入框，不使用 fixed 座標 ===== */
+/* ===== REAL FIX: 花種下拉固定在輸入框正下方（電腦＋手機） ===== */
 .flower-combo-wrap{
-  position:relative !important;
-  overflow:visible !important;
+  position: relative !important;
+  overflow: visible !important;
+  z-index: 9999 !important;
 }
+
+#flowerComboInput{
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 #flowerComboDropdown.flower-combo-dropdown{
-  position:absolute !important;
-  left:0 !important;
-  right:0 !important;
-  top:calc(100% + 6px) !important;
-  width:100% !important;
-  min-width:0 !important;
-  box-sizing:border-box !important;
-  z-index:999999 !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: auto !important;
+  top: calc(100% + 6px) !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  transform: none !important;
+  margin: 0 !important;
+  z-index: 999999 !important;
+  box-sizing: border-box !important;
 }
+
+.flower-field,
 .flower-picker,
 .flower-picker-row,
 .flower-picker-row.combo-row,
-.flower-field,
+.wish-top-fields,
+.form-grid,
+.panel,
 #wish,
-.panel{
-  overflow:visible !important;
+.page-section.active{
+  overflow: visible !important;
 }
 
-/* ===== FINAL REAL FIX: 花種下拉選單改用 body fixed 定位，桌機/手機都貼齊輸入框 ===== */
-body > #flowerComboDropdown.flower-combo-dropdown{
-  position:fixed !important;
-  right:auto !important;
-  min-width:0 !important;
-  box-sizing:border-box !important;
-  z-index:999999 !important;
+@media (max-width: 520px){
+  #flowerComboDropdown.flower-combo-dropdown{
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
 }
