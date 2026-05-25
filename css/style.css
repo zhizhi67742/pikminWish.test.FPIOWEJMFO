@@ -2934,3 +2934,46 @@ label textarea {
     font-size: 12px;
   }
 }
+
+
+/* ===== 回到頂部按鈕 ===== */
+#backToTopBtn{
+  position:fixed;
+  right:16px;
+  bottom:18px;
+  width:46px;
+  height:46px;
+  border:none;
+  border-radius:999px;
+  background:rgba(47, 79, 47, .9);
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+  z-index:9999;
+  box-shadow:0 4px 12px rgba(0,0,0,.22);
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(10px);
+  transition:.22s ease;
+}
+
+#backToTopBtn.show{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+}
+
+#backToTopBtn:hover{
+  transform:scale(1.08);
+  background:rgba(47, 79, 47, 1);
+}
+
+@media(max-width:768px){
+  #backToTopBtn{
+    width:42px;
+    height:42px;
+    right:12px;
+    bottom:14px;
+    font-size:18px;
+  }
+}

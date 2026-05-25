@@ -1963,3 +1963,29 @@ function initCollapseBlocks() {
 window.addEventListener("load", initCollapseBlocks);
 window.addEventListener("resize", refreshCollapseHeights);
 document.addEventListener("DOMContentLoaded", initCollapseBlocks);
+
+
+/* ===== 回到頂部按鈕 ===== */
+window.addEventListener("load", function(){
+  const btn = document.getElementById("backToTopBtn");
+  if(!btn) return;
+
+  function toggleTopBtn(){
+    if(window.scrollY > 260){
+      btn.classList.add("show");
+    }else{
+      btn.classList.remove("show");
+    }
+  }
+
+  window.addEventListener("scroll", toggleTopBtn);
+
+  btn.addEventListener("click", function(){
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+  });
+
+  toggleTopBtn();
+});
