@@ -356,8 +356,11 @@ h1 {
                     <input id="flowerComboInput" list="flowerOptions" type="text" placeholder="🔍 可直接輸入，也可從選單選花名" autocomplete="off" />
                     <button class="clear-input-btn" type="button" aria-label="清除花種搜尋" onclick="clearFlowerComboInput()">×</button>
                   </div>
+                  <select id="flowerMobileSelect" class="flower-mobile-select" aria-label="選擇花種">
+                    <option value="">選擇花種</option>
+                  </select>
                   <datalist id="flowerOptions"></datalist>
-                  <select id="flowerColorSelect" aria-label="選擇顏色"></select></select>
+                  <select id="flowerColorSelect" aria-label="選擇顏色"></select>
                 </div>
               </div>
               <p class="flower-tip">
@@ -370,16 +373,16 @@ h1 {
               <div class="time-range">
                 <div class="time-block">
                   <span>開始</span>
-                  <select id="startHour"></select></select>
+                  <select id="startHour"></select>
                   <b>:</b>
-                  <select id="startMinute"></select></select>
+                  <select id="startMinute"></select>
                 </div>
 
                 <div class="time-block">
                   <span>結束</span>
-                  <select id="endHour"></select></select>
+                  <select id="endHour"></select>
                   <b>:</b>
-                  <select id="endMinute"></select></select>
+                  <select id="endMinute"></select>
                 </div>
               </div>
             </label>
@@ -752,7 +755,7 @@ h1 {
         <select class="gate-platform-select gate-social-select"  id="socialTypeSelect">
           <option value="LINE">LINE</option>
           <option value="DC">DC</option>
-        </select></select>
+        </select>
 
         <input
           type="text"

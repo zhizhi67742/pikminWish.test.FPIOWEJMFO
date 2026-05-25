@@ -1171,6 +1171,22 @@ label textarea {
     grid-template-columns: 1fr;
   }
 }
+
+.flower-mobile-select {
+  display: none;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .flower-combo-wrap {
+    display: none;
+  }
+
+  .flower-mobile-select {
+    display: block;
+  }
+}
+
 .flower-tip {
   margin-top: 8px;
   margin-bottom: 0;

@@ -207,6 +207,7 @@ function buildTimeOptions() {
 
 function initFlowerPicker() {
   const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
+  const mobileFlowerSelect = document.getElementById("flowerMobileSelect");
   const dataList = document.getElementById("flowerOptions");
   const oldFlowerSelect = document.getElementById("flowerSelect");
   const colorSelect = document.getElementById("flowerColorSelect");
@@ -223,6 +224,7 @@ function initFlowerPicker() {
   function getTypedFlowerName() {
     const typed = comboInput.value.trim();
     if (typed) return typed;
+    if (mobileFlowerSelect && mobileFlowerSelect.value) return mobileFlowerSelect.value.trim();
     if (oldFlowerSelect && oldFlowerSelect.value) return oldFlowerSelect.value.trim();
     return "";
   }
@@ -245,15 +247,28 @@ function initFlowerPicker() {
     });
   }
 
-  function renderLegacySelectIfNeeded() {
-    if (!oldFlowerSelect) return;
-    oldFlowerSelect.innerHTML = "";
+  function renderFlowerSelectOptions(selectEl, includePlaceholder) {
+    if (!selectEl) return;
+    const currentValue = selectEl.value;
+    selectEl.innerHTML = "";
+    if (includePlaceholder) {
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "選擇花種";
+      selectEl.appendChild(placeholder);
+    }
     flowerDex.forEach(function (flower) {
       const option = document.createElement("option");
       option.value = flower.name;
       option.textContent = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
-      oldFlowerSelect.appendChild(option);
+      selectEl.appendChild(option);
     });
+    if (currentValue) selectEl.value = currentValue;
+  }
+
+  function renderLegacySelectIfNeeded() {
+    renderFlowerSelectOptions(oldFlowerSelect, false);
+    renderFlowerSelectOptions(mobileFlowerSelect, true);
   }
 
   function renderColorOptions() {
@@ -283,8 +298,18 @@ function initFlowerPicker() {
     flowerInput.value = flowerName && color ? color + "色" + flowerName : "";
   }
 
-  comboInput.addEventListener("input", renderColorOptions);
+  comboInput.addEventListener("input", function () {
+    if (mobileFlowerSelect) mobileFlowerSelect.value = "";
+    renderColorOptions();
+  });
   comboInput.addEventListener("change", renderColorOptions);
+
+  if (mobileFlowerSelect) {
+    mobileFlowerSelect.addEventListener("change", function () {
+      comboInput.value = mobileFlowerSelect.value || "";
+      renderColorOptions();
+    });
+  }
 
   if (oldFlowerSelect) {
     oldFlowerSelect.addEventListener("change", function () {
@@ -301,12 +326,14 @@ function initFlowerPicker() {
 }
 function clearFlowerComboInput() {
   const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
+  const mobileFlowerSelect = document.getElementById("flowerMobileSelect");
   const flowerInput = document.getElementById("flowerInput");
   if (comboInput) {
     comboInput.value = "";
     comboInput.dispatchEvent(new Event("input", { bubbles: true }));
     comboInput.focus();
   }
+  if (mobileFlowerSelect) mobileFlowerSelect.value = "";
   if (flowerInput) flowerInput.value = "";
 }
 
@@ -1544,7 +1571,17 @@ function clampDexValuesToLimits() {
 function wishFromDex(name, color) {
   const firstBtn = document.querySelectorAll(".nav-btn")[0];
   showSection("wish", firstBtn);
-  document.getElementById("flowerInput").value = color + "色" + name;
+  const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
+  const mobileFlowerSelect = document.getElementById("flowerMobileSelect");
+  const colorSelect = document.getElementById("flowerColorSelect");
+  const flowerInput = document.getElementById("flowerInput");
+  if (comboInput) comboInput.value = name;
+  if (mobileFlowerSelect) mobileFlowerSelect.value = name;
+  if (colorSelect) colorSelect.value = color;
+  if (flowerInput) flowerInput.value = color + "色" + name;
+  if (comboInput) comboInput.dispatchEvent(new Event("change", { bubbles: true }));
+  if (colorSelect) colorSelect.value = color;
+  if (flowerInput) flowerInput.value = color + "色" + name;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
