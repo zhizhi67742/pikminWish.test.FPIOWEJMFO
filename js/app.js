@@ -1985,19 +1985,21 @@ window.addEventListener("load", initBackToTopBtn);
 
 
 
+
+
+
 /* ===== 訂單顯示篩選 ===== */
-const orderFilterState = window.orderFilterState || {
+window.orderFilterState = window.orderFilterState || {
   wishList: "all",
   pendingList: "all"
 };
-window.orderFilterState = orderFilterState;
 
 function getCurrentPikminUserName() {
   return (localStorage.getItem("flowerWishNickname") || "").trim();
 }
 
 function normalizeOrderText(text) {
-  return (text || "").replace(/\s+/g, "");
+  return String(text || "").replace(/\s+/g, "");
 }
 
 function getFieldValueFromCard(card, labels) {
@@ -2009,14 +2011,14 @@ function getFieldValueFromCard(card, labels) {
     if (start === -1) continue;
 
     const after = text.slice(start + key.length);
-    const nextStop = after.search(/(花朵|花種|顏色|許願者|接單花農|花農|是否完成|時間|座標|完成分享|取消|刪除|我可以幫忙|已接單)/);
+    const nextStop = after.search(/(花朵|花種|顏色|許願者|接單花農|花農|是否完成|時間|座標|完成分享|取消|刪除|我可以幫忙|確認接單|已接單)/);
     return nextStop === -1 ? after : after.slice(0, nextStop);
   }
 
   return "";
 }
 
-function cardBelongsToCurrentUser(card, listId, currentName) {
+function orderCardBelongsToMe(card, listId, currentName) {
   if (!card || !currentName) return false;
 
   const cleanName = normalizeOrderText(currentName);
@@ -2038,7 +2040,7 @@ function applyOrderFilter(listId) {
   const list = document.getElementById(listId);
   if (!list) return;
 
-  const mode = orderFilterState[listId] || "all";
+  const mode = window.orderFilterState[listId] || "all";
   const cards = Array.from(list.children).filter(function (el) {
     return !el.classList.contains("order-filter-empty");
   });
@@ -2070,9 +2072,8 @@ function applyOrderFilter(listId) {
   }
 
   let shown = 0;
-
   cards.forEach(function (card) {
-    const ok = cardBelongsToCurrentUser(card, listId, currentName);
+    const ok = orderCardBelongsToMe(card, listId, currentName);
     card.style.display = ok ? "" : "none";
     if (ok) shown++;
   });
@@ -2087,37 +2088,57 @@ function applyOrderFilter(listId) {
   if (typeof refreshCollapseHeights === "function") refreshCollapseHeights();
 }
 
-function initOrderFilters() {
-  document.querySelectorAll(".order-filter-btn").forEach(function (btn) {
-    if (btn.dataset.filterReady === "1") return;
-    btn.dataset.filterReady = "1";
+function syncOrderFilterButtons(listId) {
+  document.querySelectorAll('.order-filter-btn[data-filter-target="' + listId + '"]').forEach(function (btn) {
+    btn.classList.toggle("active", btn.getAttribute("data-filter-mode") === (window.orderFilterState[listId] || "all"));
+  });
+}
 
-    btn.addEventListener("click", function () {
+function initOrderFilters() {
+  // 事件委派：按鈕即使重繪也能按
+  if (document.body.dataset.orderFilterClickReady !== "1") {
+    document.body.dataset.orderFilterClickReady = "1";
+
+    document.body.addEventListener("click", function (event) {
+      const btn = event.target.closest(".order-filter-btn");
+      if (!btn) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
       const listId = btn.getAttribute("data-filter-target");
       const mode = btn.getAttribute("data-filter-mode") || "all";
-      orderFilterState[listId] = mode;
+      if (!listId) return;
 
-      document.querySelectorAll('.order-filter-btn[data-filter-target="' + listId + '"]').forEach(function (sameBtn) {
-        sameBtn.classList.toggle("active", sameBtn === btn);
-      });
-
+      window.orderFilterState[listId] = mode;
+      syncOrderFilterButtons(listId);
       applyOrderFilter(listId);
-    });
-  });
+    }, true);
+  }
 
   ["wishList", "pendingList"].forEach(function (id) {
+    syncOrderFilterButtons(id);
+    applyOrderFilter(id);
+
     const list = document.getElementById(id);
     if (!list || list.dataset.orderFilterObserved === "1") return;
+
     list.dataset.orderFilterObserved = "1";
+    new MutationObserver(function (mutations) {
+      // 避免自己新增空狀態時重複觸發到卡住
+      const hasRealCardChange = mutations.some(function (m) {
+        return Array.from(m.addedNodes).concat(Array.from(m.removedNodes)).some(function (node) {
+          return node.nodeType === 1 && !node.classList.contains("order-filter-empty");
+        });
+      });
 
-    new MutationObserver(function () {
-      applyOrderFilter(id);
-    }).observe(list, { childList: true, subtree: true });
+      if (hasRealCardChange) {
+        applyOrderFilter(id);
+      }
+    }).observe(list, { childList: true });
   });
-
-  applyOrderFilter("wishList");
-  applyOrderFilter("pendingList");
 }
 
 document.addEventListener("DOMContentLoaded", initOrderFilters);
 window.addEventListener("load", initOrderFilters);
+setTimeout(initOrderFilters, 500);

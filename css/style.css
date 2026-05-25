@@ -3028,3 +3028,28 @@ label textarea {
     font-size: 12px;
   }
 }
+
+
+/* ===== 訂單顯示篩選可點擊修正 ===== */
+.order-filter-tabs {
+  position: relative;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.order-filter-btn {
+  position: relative;
+  z-index: 21;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.collapse-btn {
+  position: relative;
+  z-index: 10;
+}
+
+.order-filter-empty {
+  pointer-events: none;
+}
