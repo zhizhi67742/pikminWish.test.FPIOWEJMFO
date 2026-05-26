@@ -3776,3 +3776,83 @@ h1 {
     white-space: normal;
   }
 }
+
+
+/* === FINAL FIX: keep wish submit buttons anchored under message box on GitHub Pages === */
+.panel .message-field,
+.panel .wish-actions-fixed {
+  box-sizing: border-box !important;
+  width: min(100%, 660px) !important;
+  max-width: 660px !important;
+  margin-left: 26px !important;
+  margin-right: auto !important;
+}
+
+.panel .wish-actions-fixed {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: 12px !important;
+  position: relative !important;
+  float: none !important;
+  clear: both !important;
+  padding: 0 !important;
+  margin-top: 14px !important;
+  transform: none !important;
+}
+
+.panel .wish-actions-fixed > button,
+.panel .wish-actions-fixed > .primary-btn,
+.panel .wish-actions-fixed > .farmer-share-btn {
+  position: relative !important;
+  inset: auto !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  float: none !important;
+  transform: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 48px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+  z-index: 1 !important;
+}
+
+.panel .wish-actions-fixed > .farmer-share-btn {
+  background: rgba(124, 171, 129, 0.42) !important;
+  color: #fffbe7 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.panel .wish-actions-fixed > button:hover {
+  transform: translateY(-1px) !important;
+}
+
+@media (max-width: 760px) {
+  .panel .message-field,
+  .panel .wish-actions-fixed {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .panel .wish-actions-fixed {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .panel .wish-actions-fixed > button,
+  .panel .wish-actions-fixed > .primary-btn,
+  .panel .wish-actions-fixed > .farmer-share-btn {
+    width: 100% !important;
+    white-space: normal !important;
+  }
+}
