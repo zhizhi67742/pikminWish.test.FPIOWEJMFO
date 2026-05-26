@@ -4085,3 +4085,169 @@ h1 {
   width: 100%;
   margin-top: 0 !important;
 }
+
+/* === Wish group detail modal: flower+color merged, exact-time grouped === */
+.wish-time-summary {
+  margin-top: 10px;
+  text-align: left;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 18px;
+  padding: 12px 14px;
+}
+
+.wish-time-summary p {
+  margin: 0 0 8px;
+  font-weight: 900;
+  color: #ffe28a;
+}
+
+.wish-time-summary ul,
+.pending-requesters ul {
+  margin: 0;
+  padding-left: 20px;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.7;
+}
+
+.detail-btn {
+  background: #ffd966;
+  color: #1e2d3d;
+  border: 0;
+  border-radius: 17px;
+  padding: 13px 18px;
+  font-weight: 900;
+  width: 100%;
+  cursor: pointer;
+}
+
+.wish-detail-box {
+  max-height: min(82vh, 720px);
+  display: flex;
+  flex-direction: column;
+}
+
+.wish-detail-content {
+  overflow-y: auto;
+  padding-right: 4px;
+  text-align: left;
+}
+
+.wish-detail-summary {
+  text-align: center;
+  margin-top: 0;
+  font-weight: 900;
+}
+
+.wish-time-group-detail {
+  margin: 14px 0;
+  padding: 14px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.wish-time-group-detail h3 {
+  margin: 0 0 10px;
+  color: #ffe28a;
+  font-size: 18px;
+}
+
+.wish-detail-person {
+  padding: 10px 0;
+  border-top: 1px dashed rgba(255,255,255,0.18);
+}
+
+.wish-detail-person:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.wish-detail-person p {
+  margin: 4px 0;
+}
+
+.wish-time-group-detail .help-btn {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.compact-delete-btn {
+  margin-top: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+
+.pending-requesters {
+  text-align: left;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 18px;
+  padding: 12px 14px;
+  margin: 10px 0;
+}
+
+.pending-requesters p {
+  margin: 0 0 6px;
+  font-weight: 900;
+  color: #ffe28a;
+}
+
+@media (max-width: 640px) {
+  .wish-time-summary,
+  .pending-requesters,
+  .wish-time-group-detail {
+    padding: 10px 12px;
+    border-radius: 16px;
+  }
+
+  .wish-time-group-detail h3 {
+    font-size: 16px;
+  }
+}
+
+/* === Pretty grouped help button === */
+.wish-time-group-detail .help-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fff1a8 0%, #a9e7a0 52%, #7fcf86 100%);
+  color: #233044;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  box-shadow: 0 10px 22px rgba(54, 108, 63, 0.24), inset 0 1px 0 rgba(255,255,255,0.55);
+  transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
+}
+
+.wish-time-group-detail .help-btn::before {
+  content: "🌱";
+  font-size: 1.05em;
+}
+
+.wish-time-group-detail .help-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 14px 28px rgba(54, 108, 63, 0.32), inset 0 1px 0 rgba(255,255,255,0.65);
+}
+
+.wish-time-group-detail .help-btn:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.wish-time-group-detail .help-btn.disabled-btn::before {
+  content: "🔒";
+}
+
+@media (max-width: 520px) {
+  .wish-time-group-detail .help-btn {
+    padding: 11px 14px;
+    font-size: 14px;
+  }
+}
