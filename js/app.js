@@ -1444,14 +1444,21 @@ function renderWishes() {
   const list = document.getElementById("wishList");
   list.innerHTML = "";
 
-  if (wishes.length === 0) {
+  const visibleWishes = wishes.filter(function (wish) {
+    return wish.status !== "pending" && wish.status !== "done";
+  });
+
+  if (visibleWishes.length === 0) {
     list.innerHTML = '<div class="empty">目前沒有願望卡。</div>';
     return;
   }
 
-  sortOldestFirst(wishes, getWishListSortValue).forEach(function (wish) {
+  // 範例卡固定置頂，不參與「許願時間 / 可採花時間」排序，避免被排序選項移到下面。
+  const exampleWishes = visibleWishes.filter(function (wish) { return wish.isExample; });
+  const normalWishes = sortOldestFirst(visibleWishes.filter(function (wish) { return !wish.isExample; }), getWishListSortValue);
+
+  exampleWishes.concat(normalWishes).forEach(function (wish) {
     const cardClass = wish.isExample ? "card example-card" : "card";
-    if (wish.status === "pending" || wish.status === "done") return;
 
     const wishKey = getWishKey(wish);
     const canDelete = !wish.isExample && getCurrentNickname() && String(getCurrentNickname()).trim() === String(wish.nickname).trim();
