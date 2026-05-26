@@ -3856,3 +3856,112 @@ h1 {
     white-space: normal !important;
   }
 }
+
+/* === FINAL FIX: done modal mobile bottom buttons stay aligned and inside modal === */
+#doneModal .modal-box-large {
+  box-sizing: border-box !important;
+}
+
+#doneModal .modal-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin-top: 16px !important;
+}
+
+#doneModal .modal-actions .cancel-btn,
+#doneModal .modal-actions .confirm-btn {
+  flex: 1 1 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 760px) {
+  #doneModal {
+    align-items: flex-start !important;
+    overflow-y: auto !important;
+    padding: 12px 10px !important;
+  }
+
+  #doneModal .modal-box-large {
+    width: min(94vw, 430px) !important;
+    max-width: 94vw !important;
+    max-height: calc(100dvh - 24px) !important;
+    overflow-y: auto !important;
+    padding: 22px 18px 18px !important;
+    border-radius: 24px !important;
+  }
+
+  #doneModal .modal-box h2,
+  #doneModalTitle {
+    font-size: 28px !important;
+    line-height: 1.15 !important;
+    margin-bottom: 10px !important;
+  }
+
+  #doneModalDesc {
+    font-size: 15px !important;
+    line-height: 1.65 !important;
+    margin: 0 0 12px !important;
+  }
+
+  #doneModal #harvestInfoInput {
+    height: 46px !important;
+    margin-top: 8px !important;
+  }
+
+  #doneModal .harvest-quick-tags {
+    margin: 10px 0 12px !important;
+    gap: 8px !important;
+  }
+
+  #doneModal .coord-input {
+    min-height: 132px !important;
+    max-height: 180px !important;
+    margin-top: 8px !important;
+  }
+
+  #doneModal .clean-coord-btn {
+    margin-top: 12px !important;
+    min-height: 50px !important;
+  }
+
+  #doneModal .modal-actions {
+    flex-direction: row !important;
+    gap: 10px !important;
+    margin-top: 14px !important;
+  }
+
+  #doneModal .modal-actions button {
+    min-height: 50px !important;
+    padding: 12px 10px !important;
+    font-size: 16px !important;
+    border-radius: 17px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  #doneModal .modal-box-large {
+    padding: 20px 14px 16px !important;
+  }
+
+  #doneModal .modal-actions {
+    gap: 8px !important;
+  }
+
+  #doneModal .modal-actions button {
+    font-size: 15px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+}
