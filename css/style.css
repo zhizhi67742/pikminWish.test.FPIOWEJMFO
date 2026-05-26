@@ -3997,4 +3997,55 @@ h1 {
 }
 
 
-.wish-sort-wrap{display:flex;align-items:center;gap:8px;margin:10px 0 16px;color:#fff;flex-wrap:wrap}.wish-sort-select{background:#2f5d50;border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 12px;border-radius:10px}
+/* ===== 許願區排序按鈕 ===== */
+.wish-sort-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px auto 0;
+}
+
+.wish-sort-label {
+  font-size: 14px;
+  color: #f3ffe8;
+  font-weight: 700;
+}
+
+.wish-sort-btn {
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f7ffe9;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.wish-sort-btn.active {
+  background: #dff7bb;
+  color: #284617;
+  border-color: #f3ffd8;
+}
+
+@media (max-width: 640px) {
+  .wish-sort-tabs {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .wish-sort-label {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  .wish-sort-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 7px 6px;
+    font-size: 12px;
+  }
+}
