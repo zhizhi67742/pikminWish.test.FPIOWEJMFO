@@ -18,6 +18,8 @@ let wishes = [
 let pending = [];
 let done = [];
 let wishHistory = [];
+let wishSortMode = localStorage.getItem("wishSortMode") || "createdAt";
+
 let selectedWishId = null;
 let selectedPendingId = null;
 let locallyDeletedWishKeys = new Set();
@@ -1377,6 +1379,18 @@ async function confirmDone() {
   renderAll();
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+  const wishSortSelect = document.getElementById("wishSortSelect");
+  if (wishSortSelect) {
+    wishSortSelect.value = wishSortMode;
+    wishSortSelect.addEventListener("change", function () {
+      wishSortMode = this.value;
+      localStorage.setItem("wishSortMode", wishSortMode);
+      renderWishes();
+    });
+  }
+});
+
 function renderAll() {
   renderWishes();
   renderPending();
@@ -1396,7 +1410,14 @@ function renderWishes() {
     return;
   }
 
-  sortOldestFirst(wishes).forEach(function (wish) {
+  const sortedWishes = sortOldestFirst(wishes, function(wish){
+    if (wishSortMode === "timeRange") {
+      return String(wish.timeRange || "").toLowerCase();
+    }
+    return getWishSortTime(wish);
+  });
+
+  sortedWishes.forEach(function (wish) {
     const cardClass = wish.isExample ? "card example-card" : "card";
     if (wish.status === "pending" || wish.status === "done") return;
 
