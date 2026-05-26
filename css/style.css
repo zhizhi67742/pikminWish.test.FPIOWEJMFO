@@ -3995,3 +3995,29 @@ h1 {
   pointer-events: none;
   filter: grayscale(0.35);
 }
+
+
+/* ===== FIX：許願區新增「目前可接訂單」後，手機板三顆按鈕同排；待完成區維持兩顆 ===== */
+@media (max-width: 768px) {
+  .order-filter-tabs[data-filter-area="wishList"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .order-filter-tabs[data-filter-area="pendingList"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .order-filter-tabs[data-filter-area="wishList"] .order-filter-btn {
+    font-size: 10.5px !important;
+    letter-spacing: -0.7px !important;
+    padding: 0 3px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .order-filter-tabs[data-filter-area="wishList"] .order-filter-btn {
+    font-size: 9.2px !important;
+    letter-spacing: -0.8px !important;
+    padding: 0 2px !important;
+  }
+}

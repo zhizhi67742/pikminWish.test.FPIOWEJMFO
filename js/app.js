@@ -1401,7 +1401,7 @@ function renderWishes() {
         `;
 
     list.innerHTML += `
-      <article class="${cardClass}">
+      <article class="${cardClass}" data-time-range="${escapeHtml(wish.timeRange || "")}">
         <h3>🌸 ${escapeHtml(wish.flower)}</h3>
         <p>👤 暱稱：${displayNameWithTagHtml(wish.nickname, wish.requesterPlatform || wish.platform)}</p>
         <p>🕒 發願時間：${escapeHtml(wish.createdAt)}</p>
@@ -2599,6 +2599,47 @@ function getFieldValueFromCard(card, labels) {
   return "";
 }
 
+
+function parseTimeRangeToMinutes(timeRange) {
+  const text = String(timeRange || "");
+  const match = text.match(/(\d{1,2})\s*[:：]\s*(\d{2})\s*[-~～至到－—–]\s*(\d{1,2})\s*[:：]\s*(\d{2})/);
+  if (!match) return null;
+
+  const startHour = Number(match[1]);
+  const startMinute = Number(match[2]);
+  const endHour = Number(match[3]);
+  const endMinute = Number(match[4]);
+
+  if (startHour > 23 || endHour > 23 || startMinute > 59 || endMinute > 59) return null;
+
+  return {
+    start: startHour * 60 + startMinute,
+    end: endHour * 60 + endMinute
+  };
+}
+
+function isTimeRangeCurrentlyAvailable(timeRange) {
+  const range = parseTimeRangeToMinutes(timeRange);
+  if (!range) return false;
+
+  const now = new Date();
+  const current = now.getHours() * 60 + now.getMinutes();
+
+  // 一般區間：14:00 - 20:00
+  if (range.start <= range.end) {
+    return current >= range.start && current <= range.end;
+  }
+
+  // 跨日區間：22:00 - 02:00
+  return current >= range.start || current <= range.end;
+}
+
+function orderCardIsCurrentlyAvailable(card) {
+  if (!card) return false;
+  const timeRange = card.dataset.timeRange || getFieldValueFromCard(card, ["可收花時間：", "可收花時間", "可採花時間：", "可採花時間"]);
+  return isTimeRangeCurrentlyAvailable(timeRange);
+}
+
 function orderCardBelongsToMe(card, listId, currentName) {
   if (!card || !currentName) return false;
 
@@ -2638,6 +2679,26 @@ function applyOrderFilter(listId) {
     return;
   }
 
+  let shown = 0;
+
+  if (mode === "available" && listId === "wishList") {
+    cards.forEach(function (card) {
+      const ok = orderCardIsCurrentlyAvailable(card);
+      card.style.display = ok ? "" : "none";
+      if (ok) shown++;
+    });
+
+    if (shown === 0) {
+      const empty = document.createElement("div");
+      empty.className = "order-filter-empty";
+      empty.textContent = "目前沒有可接訂單。";
+      list.appendChild(empty);
+    }
+
+    if (typeof refreshCollapseHeights === "function") refreshCollapseHeights();
+    return;
+  }
+
   const currentName = getCurrentPikminUserName();
 
   if (!currentName) {
@@ -2652,7 +2713,6 @@ function applyOrderFilter(listId) {
     return;
   }
 
-  let shown = 0;
   cards.forEach(function (card) {
     const ok = orderCardBelongsToMe(card, listId, currentName);
     card.style.display = ok ? "" : "none";
