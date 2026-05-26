@@ -2,18 +2,7 @@ let nickname = "";
 let essenceLimit = 1200;
 let petalLimit = 1200;
 
-let wishes = [
-  {
-    id: 999999,
-    flower: "白勿忘草",
-    nickname: "範例玩家",
-    createdAt: "2026/05/23 22:45",
-    timeRange: "14:00 - 23:00",
-    deleteAt: Date.now() + (1000 * 60 * 60 * 3),
-    message: "謝謝花農",
-    isExample: true
-  }
-];
+let wishes = [];
 
 let pending = [];
 let done = [];
@@ -21,58 +10,6 @@ let wishHistory = [];
 let selectedWishId = null;
 let selectedPendingId = null;
 let locallyDeletedWishKeys = new Set();
-
-let wishSortMode = localStorage.getItem("flowerWishSortMode") || "created";
-
-function getWishHarvestSortTime(item) {
-  if (!item) return Number.MAX_SAFE_INTEGER;
-
-  const range = String(item.timeRange || item.harvestTime || item.availableTime || "").trim();
-  const match = range.match(/(\d{1,2})\s*[:：]\s*(\d{1,2})/);
-  if (match) {
-    const hour = Math.max(0, Math.min(23, Number(match[1])));
-    const minute = Math.max(0, Math.min(59, Number(match[2])));
-    return hour * 60 + minute;
-  }
-
-  const hourOnly = range.match(/(^|[^\d])(\d{1,2})(?=\s*(點|時))/);
-  if (hourOnly) {
-    const hour = Math.max(0, Math.min(23, Number(hourOnly[2])));
-    return hour * 60;
-  }
-
-  return Number.MAX_SAFE_INTEGER;
-}
-
-function getWishListSortValue(item) {
-  if (wishSortMode === "harvest") {
-    const harvestTime = getWishHarvestSortTime(item);
-    const createTime = getWishSortTime(item);
-    return harvestTime * 10000000000000 + createTime;
-  }
-  return getWishSortTime(item);
-}
-
-function syncWishSortButtons() {
-  document.querySelectorAll(".wish-sort-btn").forEach(function (btn) {
-    btn.classList.toggle("active", btn.dataset.sortMode === wishSortMode);
-  });
-
-  const sortSelect = document.getElementById("wishSortSelect");
-  if (sortSelect && sortSelect.value !== wishSortMode) {
-    sortSelect.value = wishSortMode;
-  }
-}
-
-function setWishSortMode(mode) {
-  wishSortMode = mode === "harvest" ? "harvest" : "created";
-  localStorage.setItem("flowerWishSortMode", wishSortMode);
-  syncWishSortButtons();
-  renderWishes();
-  bindDynamicButtons();
-  if (typeof initOrderFilters === "function") initOrderFilters();
-}
-
 
 function getCurrentNickname() {
   const savedNickname = normalizeNicknameOnly(localStorage.getItem("flowerWishNickname") || "");
@@ -1440,7 +1377,6 @@ function renderAll() {
 
 function renderWishes() {
   removeExpiredWishes();
-  syncWishSortButtons();
   const list = document.getElementById("wishList");
   list.innerHTML = "";
 
@@ -1449,7 +1385,7 @@ function renderWishes() {
     return;
   }
 
-  sortOldestFirst(wishes, getWishListSortValue).forEach(function (wish) {
+  sortOldestFirst(wishes).forEach(function (wish) {
     const cardClass = wish.isExample ? "card example-card" : "card";
     if (wish.status === "pending" || wish.status === "done") return;
 
@@ -1976,17 +1912,25 @@ function isEndingSoon(targetTime) {
 }
 
 
+function isDemoWish(wish) {
+  if (!wish) return false;
+  return wish.isExample === true ||
+    wish.id === 999999 ||
+    wish.nickname === "範例玩家" ||
+    wish.nickname === "小芽";
+}
+
 function removeDemoWishesFromStorage() {
   wishes = wishes.filter(function (wish) {
-    return wish.nickname !== "小芽";
+    return !isDemoWish(wish);
   });
 
   pending = pending.filter(function (wish) {
-    return wish.nickname !== "小芽";
+    return !isDemoWish(wish);
   });
 
   done = done.filter(function (wish) {
-    return wish.nickname !== "小芽";
+    return !isDemoWish(wish);
   });
 
   safeSetLocalStorage("flowerWishWishes", JSON.stringify(wishes));
@@ -1998,7 +1942,7 @@ function removeDemoWishesFromStorage() {
 function removeExpiredWishes() {
   const now = Date.now();
   wishes = wishes.filter(function (wish) {
-    return wish.isExample || !wish.deleteAt || wish.deleteAt > now;
+    return !isDemoWish(wish) && (!wish.deleteAt || wish.deleteAt > now);
   });
 }
 
@@ -2063,23 +2007,6 @@ function loadData() {
   if (savedHistory) wishHistory = JSON.parse(savedHistory);
 
   removeDemoWishesFromStorage();
-
-  const hasExample = wishes.some(function (wish) {
-    return wish.isExample === true;
-  });
-
-  if (!hasExample) {
-    wishes.unshift({
-      id: 999999,
-      flower: "白勿忘草",
-      nickname: "範例玩家",
-      createdAt: "2026/05/23 22:45",
-      timeRange: "14:00 - 23:00",
-      deleteAt: Date.now() + (1000 * 60 * 60 * 3),
-      message: "謝謝花農",
-      isExample: true
-    });
-  }
 
 
   flowerDex = JSON.parse(JSON.stringify(DEFAULT_FLOWER_DEX));
@@ -2351,7 +2278,7 @@ async function startFirebaseSync() {
         ...docItem.data()
       };
 
-      if (locallyDeletedWishKeys.has(String(data.firebaseId || data.id || ""))) {
+      if (locallyDeletedWishKeys.has(String(data.firebaseId || data.id || "")) || isDemoWish(data)) {
         return;
       }
 
@@ -2641,25 +2568,6 @@ window.addEventListener("load", initBackToTopBtn);
 
 
 
-
-
-/* ===== 許願區排序 ===== */
-document.addEventListener("change", function (event) {
-  const select = event.target.closest("#wishSortSelect");
-  if (!select) return;
-  setWishSortMode(select.value || "created");
-});
-document.addEventListener("click", function (event) {
-  const btn = event.target.closest(".wish-sort-btn");
-  if (!btn) return;
-
-  event.preventDefault();
-  event.stopPropagation();
-  setWishSortMode(btn.dataset.sortMode || "created");
-}, true);
-
-document.addEventListener("DOMContentLoaded", syncWishSortButtons);
-window.addEventListener("load", syncWishSortButtons);
 
 /* ===== 訂單顯示篩選 ===== */
 window.orderFilterState = window.orderFilterState || {
