@@ -142,7 +142,7 @@ function setLikedDoneKey(doneKey, liked) {
 }
 
 const DEFAULT_FLOWER_DEX = [
-  { name: "風鈴草", subtitle: "6月新花・目前無法獲得", colors: ["白", "紅", "藍"] },
+  { name: "風鈴草", subtitle: "6月新花・目前無法獲得", colors: ["白", "紅", "藍"], locked: true },
   { name: "勿忘草", colors: ["白", "黃", "紅", "藍"] },
   { name: "週年玫瑰", colors: ["白", "黃", "紅", "藍"] },
   { name: "銀蓮花", colors: ["白", "黃", "紅", "藍"] },
@@ -193,6 +193,21 @@ const DEFAULT_FLOWER_DEX = [
   { name: "鬱金香", colors: ["白", "黃", "紅", "藍"] },
   { name: "鸚鵡鬱金香", colors: ["白", "黃", "紅", "藍"] }
 ];
+
+
+function isLockedFlowerName(name) {
+  const text = String(name || "").trim();
+  return text === "風鈴草" || /風鈴草/.test(text);
+}
+
+function isLockedWishFlowerValue(value) {
+  const text = String(value || "").trim();
+  return /風鈴草/.test(text);
+}
+
+function warnLockedFlower() {
+  alert("風鈴草 5/31 才會開放，目前先保留選項，暫時不能許願或上傳喔～");
+}
 
 let flowerDex = JSON.parse(JSON.stringify(DEFAULT_FLOWER_DEX));
 let dexFilterMode = "all";
@@ -311,30 +326,24 @@ function initFlowerPicker() {
     flowers.forEach(function (flower) {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "flower-combo-option";
+      btn.className = "flower-combo-option" + (flower.locked ? " is-disabled" : "");
       btn.setAttribute("role", "option");
-
-      const isLockedFlower = flower.name === "風鈴草";
-
       btn.textContent = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
-
-      if (isLockedFlower) {
+      if (flower.locked) {
         btn.disabled = true;
-        btn.classList.add("disabled");
+        btn.setAttribute("aria-disabled", "true");
+        btn.title = "5/31 才會開放，目前不能選擇";
       }
-
       btn.addEventListener("mousedown", function (event) {
-        if (isLockedFlower) {
-          event.preventDefault();
+        event.preventDefault();
+        if (flower.locked) {
+          warnLockedFlower();
           return;
         }
-
-        event.preventDefault();
         comboInput.value = flower.name;
         renderColorOptions();
         closeDropdown();
       });
-
       dropdown.appendChild(btn);
     });
 
@@ -345,6 +354,15 @@ function initFlowerPicker() {
     const flowerName = getTypedFlowerName();
     const selectedFlower = findFlowerByName(flowerName);
     const currentColor = colorSelect.value;
+    if (selectedFlower && selectedFlower.locked) {
+      colorSelect.innerHTML = "";
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "5/31 開放後才能選";
+      colorSelect.appendChild(option);
+      flowerInput.value = "";
+      return;
+    }
     const colors = getWishColorOptions(selectedFlower ? selectedFlower.colors : allColors);
 
     colorSelect.innerHTML = "";
@@ -365,6 +383,10 @@ function initFlowerPicker() {
   function updateSelectedFlowerInput() {
     const flowerName = getTypedFlowerName();
     const color = colorSelect.value;
+    if (isLockedFlowerName(flowerName)) {
+      flowerInput.value = "";
+      return;
+    }
     flowerInput.value = buildWishFlowerName(color, flowerName);
   }
 
@@ -608,6 +630,12 @@ async function addWish() {
 
   if (!flower) {
     alert("請輸入花種。");
+    return;
+  }
+
+  if (isLockedWishFlowerValue(flower)) {
+    warnLockedFlower();
+    resetFlowerPicker();
     return;
   }
 
@@ -1215,6 +1243,12 @@ async function confirmDone() {
 
     if (!flower) {
       alert("請先選擇或輸入花種。");
+      return;
+    }
+
+    if (isLockedWishFlowerValue(flower)) {
+      warnLockedFlower();
+      resetFlowerPicker();
       return;
     }
 
@@ -2308,6 +2342,12 @@ async function startFirebaseSync() {
       return;
     }
 
+    if (isLockedWishFlowerValue(flower)) {
+      warnLockedFlower();
+      resetFlowerPicker();
+      return;
+    }
+
     const canSubmitRepeatWish = await askRepeatWishIfNeeded(flower, nickname);
     if (!canSubmitRepeatWish) return;
 
@@ -2853,12 +2893,25 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
     function updateHiddenValue() {
       const name = input.value.trim();
       const color = colorSelect.value;
+      if (isLockedFlowerName(name)) {
+        hiddenInput.value = "";
+        return;
+      }
       hiddenInput.value = buildWishFlowerName(color, name);
     }
 
     function renderColors() {
       const current = colorSelect.value;
       const found = findFlower(input.value);
+      if (found && found.locked) {
+        colorSelect.innerHTML = "";
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "5/31 開放後才能選";
+        colorSelect.appendChild(option);
+        hiddenInput.value = "";
+        return;
+      }
       const colors = getWishColorOptions(found && Array.isArray(found.colors) && found.colors.length ? found.colors : defaultColors);
       colorSelect.innerHTML = "";
       colors.forEach(function (color) {
@@ -2895,11 +2948,20 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
         flowers.forEach(function (flower) {
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.className = "flower-combo-option";
+          btn.className = "flower-combo-option" + (flower.locked ? " is-disabled" : "");
           btn.textContent = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
+          if (flower.locked) {
+            btn.disabled = true;
+            btn.setAttribute("aria-disabled", "true");
+            btn.title = "5/31 才會開放，目前不能選擇";
+          }
           btn.addEventListener("mousedown", function (event) {
             event.preventDefault();
             event.stopPropagation();
+            if (flower.locked) {
+              warnLockedFlower();
+              return;
+            }
             input.value = flower.name;
             renderColors();
             closeDropdown();

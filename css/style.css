@@ -799,18 +799,6 @@ label textarea {
   outline: none;
 }
 
-
-.flower-combo-option.disabled,
-.flower-combo-option:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.flower-combo-option.disabled:hover,
-.flower-combo-option:disabled:hover {
-  background: transparent;
-}
-
 .flower-combo-empty {
   padding: 9px 10px;
   color: rgba(255,255,255,0.58);
@@ -3997,4 +3985,13 @@ h1 {
   .rule-scroll{
     max-height: 45vh;
   }
+}
+
+/* 風鈴草 5/31 前保留顯示但禁止選擇 */
+.flower-combo-option.is-disabled,
+.flower-combo-option:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.35);
 }
