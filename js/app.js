@@ -313,13 +313,28 @@ function initFlowerPicker() {
       btn.type = "button";
       btn.className = "flower-combo-option";
       btn.setAttribute("role", "option");
+
+      const isLockedFlower = flower.name === "風鈴草";
+
       btn.textContent = flower.subtitle ? flower.name + "（" + flower.subtitle + "）" : flower.name;
+
+      if (isLockedFlower) {
+        btn.disabled = true;
+        btn.classList.add("disabled");
+      }
+
       btn.addEventListener("mousedown", function (event) {
+        if (isLockedFlower) {
+          event.preventDefault();
+          return;
+        }
+
         event.preventDefault();
         comboInput.value = flower.name;
         renderColorOptions();
         closeDropdown();
       });
+
       dropdown.appendChild(btn);
     });
 

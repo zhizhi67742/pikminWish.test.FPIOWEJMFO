@@ -799,6 +799,18 @@ label textarea {
   outline: none;
 }
 
+
+.flower-combo-option.disabled,
+.flower-combo-option:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.flower-combo-option.disabled:hover,
+.flower-combo-option:disabled:hover {
+  background: transparent;
+}
+
 .flower-combo-empty {
   padding: 9px 10px;
   color: rgba(255,255,255,0.58);
