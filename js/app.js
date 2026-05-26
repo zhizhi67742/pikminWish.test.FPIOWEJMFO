@@ -57,6 +57,11 @@ function syncWishSortButtons() {
   document.querySelectorAll(".wish-sort-btn").forEach(function (btn) {
     btn.classList.toggle("active", btn.dataset.sortMode === wishSortMode);
   });
+
+  const sortSelect = document.getElementById("wishSortSelect");
+  if (sortSelect && sortSelect.value !== wishSortMode) {
+    sortSelect.value = wishSortMode;
+  }
 }
 
 function setWishSortMode(mode) {
@@ -2639,6 +2644,11 @@ window.addEventListener("load", initBackToTopBtn);
 
 
 /* ===== 許願區排序 ===== */
+document.addEventListener("change", function (event) {
+  const select = event.target.closest("#wishSortSelect");
+  if (!select) return;
+  setWishSortMode(select.value || "created");
+});
 document.addEventListener("click", function (event) {
   const btn = event.target.closest(".wish-sort-btn");
   if (!btn) return;

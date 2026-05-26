@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>花農許願池</title>
-  <link rel="stylesheet" href="css/style.css?v=dropdown-under-input-fix-20260526" />
+  <link rel="stylesheet" href="css/style.css?v=sort-control-fix-20260527" />
 
 <style>
 .wish-history-item{
@@ -434,10 +434,12 @@ h1 {
           <button type="button" class="order-filter-btn active" data-filter-target="wishList" data-filter-mode="all">顯示所有訂單</button>
           <button type="button" class="order-filter-btn" data-filter-target="wishList" data-filter-mode="mine">僅顯示自己發的訂單</button>
         </div>
-        <div class="wish-sort-tabs" aria-label="許願區排序">
-          <span class="wish-sort-label">排序：</span>
-          <button type="button" class="wish-sort-btn active" data-sort-mode="created">依許願時間</button>
-          <button type="button" class="wish-sort-btn" data-sort-mode="harvest">依可採花時間</button>
+        <div class="wish-sort-control" aria-label="許願區排序">
+          <label class="wish-sort-label" for="wishSortSelect">排序：</label>
+          <select id="wishSortSelect" class="wish-sort-select">
+            <option value="created">依許願時間</option>
+            <option value="harvest">依可採花時間</option>
+          </select>
         </div>
       </section>
       <div id="wishList" class="card-grid collapse-content"></div>
