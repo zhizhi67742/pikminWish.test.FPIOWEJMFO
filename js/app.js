@@ -235,6 +235,26 @@ function buildTimeOptions() {
   document.getElementById("endHour").value = "20";
 }
 
+
+function getWishColorOptions(baseColors) {
+  const colors = Array.isArray(baseColors) && baseColors.length ? baseColors.slice() : ["白", "黃", "紅", "藍"];
+  const uniqueColors = colors.filter(function (color, index) { return colors.indexOf(color) === index; });
+  if (uniqueColors.length >= 2) {
+    if (!uniqueColors.includes("混色")) uniqueColors.push("混色");
+    if (!uniqueColors.includes("隨意色")) uniqueColors.push("隨意色");
+  }
+  return uniqueColors;
+}
+
+function getWishColorLabel(color) {
+  return String(color || "").endsWith("色") ? color : color + "色";
+}
+
+function buildWishFlowerName(color, flowerName) {
+  if (!flowerName || !color) return "";
+  return getWishColorLabel(color) + flowerName;
+}
+
 function initFlowerPicker() {
   const comboInput = document.getElementById("flowerComboInput") || document.getElementById("flowerKeywordInput");
   const dropdown = document.getElementById("flowerComboDropdown");
@@ -310,13 +330,13 @@ function initFlowerPicker() {
     const flowerName = getTypedFlowerName();
     const selectedFlower = findFlowerByName(flowerName);
     const currentColor = colorSelect.value;
-    const colors = selectedFlower ? selectedFlower.colors : allColors;
+    const colors = getWishColorOptions(selectedFlower ? selectedFlower.colors : allColors);
 
     colorSelect.innerHTML = "";
     colors.forEach(function (color) {
       const option = document.createElement("option");
       option.value = color;
-      option.textContent = color + "色";
+      option.textContent = getWishColorLabel(color);
       colorSelect.appendChild(option);
     });
 
@@ -330,7 +350,7 @@ function initFlowerPicker() {
   function updateSelectedFlowerInput() {
     const flowerName = getTypedFlowerName();
     const color = colorSelect.value;
-    flowerInput.value = flowerName && color ? color + "色" + flowerName : "";
+    flowerInput.value = buildWishFlowerName(color, flowerName);
   }
 
   comboInput.oninput = function () {
@@ -692,7 +712,7 @@ function deleteWish(id) {
     return;
   }
 
-  if (!confirm("確定要刪除這個願望嗎？")) return;
+  
 
   const deletedWish = wishes[wishIndex];
   const deletedKey = String(deletedWish.firebaseId || deletedWish.id || id || "");
@@ -904,9 +924,6 @@ async function cancelTakeOrder(id) {
     return;
   }
 
-  const ok = confirm("確認取消接單？\n取消後訂單會重新開放，其他花農可以重新接單。");
-  if (!ok) return;
-
   const returnedWish = pending.splice(pendingIndex, 1)[0];
   const oldFarmer = returnedWish.farmer || returnedWish.acceptedBy || getCurrentNickname() || "花農";
 
@@ -942,7 +959,7 @@ async function cancelTakeOrder(id) {
 
   saveData();
   renderAll();
-  alert("已取消接單，訂單重新開放。\n取消原因：" + cleanReason);
+  
 }
 
 
@@ -2806,18 +2823,18 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
     function updateHiddenValue() {
       const name = input.value.trim();
       const color = colorSelect.value;
-      hiddenInput.value = name && color ? color + "色" + name : "";
+      hiddenInput.value = buildWishFlowerName(color, name);
     }
 
     function renderColors() {
       const current = colorSelect.value;
       const found = findFlower(input.value);
-      const colors = found && Array.isArray(found.colors) && found.colors.length ? found.colors : defaultColors;
+      const colors = getWishColorOptions(found && Array.isArray(found.colors) && found.colors.length ? found.colors : defaultColors);
       colorSelect.innerHTML = "";
       colors.forEach(function (color) {
         const option = document.createElement("option");
         option.value = color;
-        option.textContent = color + "色";
+        option.textContent = getWishColorLabel(color);
         colorSelect.appendChild(option);
       });
       if (colors.includes(current)) colorSelect.value = current;
