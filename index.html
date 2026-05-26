@@ -395,7 +395,10 @@ h1 {
           <textarea id="messageInput" rows="4" placeholder="例如：新手求幫忙、謝謝花農..."></textarea>
         </label>
 
-        <button class="primary-btn" onclick="addWish()">🌱 新增願望卡</button>
+        <div class="wish-action-row">
+          <button class="primary-btn" onclick="addWish()">🌱 新增願望卡</button>
+          <button class="farmer-share-btn" type="button" onclick="openFarmerShareModal()">📍 花農直接上傳座標</button>
+        </div>
       </section>
 
       <section class="section-title collapse-title">
@@ -651,8 +654,8 @@ h1 {
 
   <div id="doneModal" class="modal">
     <div class="modal-box modal-box-large">
-      <h2>完成分享</h2>
-      <p>請輸入採收資訊與分享地點。分享地點可以直接貼上多行座標。</p>
+      <h2 id="doneModalTitle">完成分享</h2>
+      <p id="doneModalDesc">請輸入採收資訊與分享地點。分享地點可以直接貼上多行座標。</p>
 
       <input
         id="harvestInfoInput"

@@ -803,6 +803,7 @@ function openDoneModal(id) {
   }
 
   selectedPendingId = id;
+  setDoneModalText(false);
 
   // 每次打開新的完成視窗都清空欄位，避免沿用上一筆已送出的座標/採收資訊。
   const harvestInput = document.getElementById("harvestInfoInput");
@@ -813,8 +814,49 @@ function openDoneModal(id) {
   document.getElementById("doneModal").classList.add("show");
 }
 
+function setDoneModalText(isFarmerShare) {
+  const title = document.getElementById("doneModalTitle");
+  const desc = document.getElementById("doneModalDesc");
+  if (!title || !desc) return;
+
+  if (isFarmerShare) {
+    title.textContent = "花農上傳座標";
+    desc.textContent = "請輸入採收資訊與分享地點，送出後會直接公開到已完成區。";
+  } else {
+    title.textContent = "完成分享";
+    desc.textContent = "請輸入採收資訊與分享地點。分享地點可以直接貼上多行座標。";
+  }
+}
+
+function openFarmerShareModal() {
+  const flower = document.getElementById("flowerInput")?.value?.trim();
+  const currentName = getCurrentNickname();
+
+  if (!currentName) {
+    alert("請先設定暱稱，才能上傳花農座標。");
+    openRuleModal();
+    return;
+  }
+
+  if (!flower) {
+    alert("請先選擇或輸入花種，再上傳座標。");
+    return;
+  }
+
+  selectedPendingId = "__farmer_direct_share__";
+  setDoneModalText(true);
+
+  const harvestInput = document.getElementById("harvestInfoInput");
+  const locationInput = document.getElementById("shareLocationInput");
+  if (harvestInput) harvestInput.value = "";
+  if (locationInput) locationInput.value = "";
+
+  document.getElementById("doneModal").classList.add("show");
+}
+
 function closeDoneModal() {
   selectedPendingId = null;
+  setDoneModalText(false);
   document.getElementById("doneModal").classList.remove("show");
 }
 
@@ -1117,6 +1159,85 @@ async function confirmDone() {
     return;
   }
 
+  if (selectedPendingId === "__farmer_direct_share__") {
+    const flower = document.getElementById("flowerInput")?.value?.trim();
+    const currentName = getCurrentNickname();
+
+    if (!currentName) {
+      alert("請先設定暱稱，才能上傳花農座標。");
+      return;
+    }
+
+    if (!flower) {
+      alert("請先選擇或輸入花種。");
+      return;
+    }
+
+    const startHour = document.getElementById("startHour")?.value || "14";
+    const startMinute = document.getElementById("startMinute")?.value || "00";
+    const endHour = document.getElementById("endHour")?.value || "20";
+    const endMinute = document.getElementById("endMinute")?.value || "00";
+    const message = document.getElementById("messageInput")?.value?.trim() || "花農直接分享";
+
+    const directItem = {
+      id: Date.now(),
+      flower: flower,
+      nickname: "花農直接分享",
+      requester: "花農直接分享",
+      farmer: currentName,
+      acceptedBy: currentName,
+      farmerPlatform: getCurrentPlatform(),
+      acceptedByPlatform: getCurrentPlatform(),
+      requesterPlatform: "",
+      createdAt: formatNow(),
+      createdTimestamp: Date.now(),
+      timeRange: `${startHour}:${startMinute} - ${endHour}:${endMinute}`,
+      message: message,
+      harvestInfo: harvestInfo || "沒有補充採收資訊",
+      location: location,
+      doneAt: Date.now(),
+      deleteAt: Date.now() + 60 * 60 * 1000,
+      likes: 0,
+      liked: false,
+      status: "done",
+      directShare: true
+    };
+
+    const historyRecord = makeWishHistoryRecord(directItem, "花農分享");
+
+    if (window.firebaseDB && window.firebaseFns) {
+      const { collection, addDoc } = window.firebaseFns;
+      try {
+        await addDoc(collection(window.firebaseDB, "wishes"), directItem);
+      } catch (error) {
+        console.error("Firebase 花農座標同步失敗", error);
+        done.push(directItem);
+        alert("雲端同步失敗，已先暫存在本機。請重新整理後確認是否有上傳成功。");
+      }
+    } else {
+      done.push(directItem);
+    }
+
+    addLocalWishHistory(historyRecord);
+    await syncWishHistoryToCloud(historyRecord);
+
+    selectedPendingId = null;
+    document.getElementById("shareLocationInput").value = "";
+    document.getElementById("harvestInfoInput").value = "";
+    document.getElementById("messageInput").value = "";
+    document.getElementById("flowerInput").value = "";
+    resetFlowerPicker();
+
+    closeDoneModal();
+    document.getElementById("uploadConfirmModal").classList.remove("show");
+
+    alert("已上傳到已完成區。\n提醒：這邊不會自動通知，請記得貼到種花群喔！");
+
+    saveData();
+    renderAll();
+    return;
+  }
+
   const pendingIndex = pending.findIndex(function (item) {
     return String(getWishKey(item)) === String(selectedPendingId);
   });
@@ -1275,11 +1396,14 @@ function renderDone() {
     const doneKey = getWishKey(item);
     item.liked = hasLikedDoneKey(doneKey);
 
+    const donePeopleHtml = item.directShare
+      ? `<p>📍 分享類型：花農直接上傳</p><p>🌱 分享花農：${displayNameWithTagHtml(item.farmer, item.farmerPlatform || item.acceptedByPlatform)}</p>`
+      : `<p>👤 發願者：${displayNameWithTagHtml(item.nickname, item.requesterPlatform || item.platform)}</p><p>🌱 接單花農：${displayNameWithTagHtml(item.farmer, item.farmerPlatform || item.acceptedByPlatform)}</p>`;
+
     list.innerHTML += `
       <article class="card">
         <h3>✨ ${escapeHtml(item.flower)}</h3>
-        <p>👤 發願者：${displayNameWithTagHtml(item.nickname, item.requesterPlatform || item.platform)}</p>
-        <p>🌱 接單花農：${displayNameWithTagHtml(item.farmer, item.farmerPlatform || item.acceptedByPlatform)}</p>
+        ${donePeopleHtml}
         <p>🌼 採收資訊：${escapeHtml(item.harvestInfo)}</p>
         <p>📍 分享地點／座標：</p>
         <pre class="coord-list" id="coord-${item.id}">${escapeHtml(item.location).replace(/\\n/g, "\n")}</pre>
