@@ -1296,6 +1296,8 @@ label textarea {
   background: rgba(23,30,40,0.96);
   border: 1px solid rgba(255,255,255,0.08);
   color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .nickname-modal h1 {
@@ -1305,7 +1307,9 @@ label textarea {
 }
 
 .rule-scroll {
-  max-height: 300px;
+  flex: 1;
+  min-height: 0;
+  max-height: 52vh;
   overflow-y: auto;
   margin-bottom: 24px;
   padding-right: 8px;
@@ -3963,5 +3967,22 @@ h1 {
     font-size: 15px !important;
     padding-left: 6px !important;
     padding-right: 6px !important;
+  }
+}
+
+
+/* FIX: 規則彈窗底部輸入區不跑版 */
+.nickname-input-wrap{
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+@media (max-height: 760px){
+  .nickname-modal{
+    max-height: 92vh;
+  }
+
+  .rule-scroll{
+    max-height: 45vh;
   }
 }
