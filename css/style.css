@@ -3722,3 +3722,57 @@ h1 {
     vertical-align:1px !important;
   }
 }
+
+
+/* Farmer direct upload button alignment fix */
+.panel > label:has(#messageInput),
+.panel > .wish-action-row {
+  width: min(100%, 660px);
+  margin-left: 26px;
+}
+
+.wish-action-row {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-content: start;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.wish-action-row .primary-btn,
+.wish-action-row .farmer-share-btn {
+  position: static !important;
+  float: none !important;
+  transform: none;
+  white-space: nowrap;
+  min-height: 48px;
+}
+
+.wish-action-row .farmer-share-btn {
+  background: rgba(124, 171, 129, 0.38);
+  color: #fffbe7;
+}
+
+.wish-action-row .primary-btn:hover,
+.wish-action-row .farmer-share-btn:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 760px) {
+  .panel > label:has(#messageInput),
+  .panel > .wish-action-row {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .wish-action-row {
+    grid-template-columns: 1fr;
+  }
+
+  .wish-action-row .primary-btn,
+  .wish-action-row .farmer-share-btn {
+    width: 100%;
+    white-space: normal;
+  }
+}
