@@ -1045,17 +1045,22 @@ function getHistorySortTime(item) {
 
 function makeWishHistoryRecord(item, statusText) {
   const farmerName = item.farmer || item.acceptedBy || getCurrentNickname() || "花農";
-  const requesterName = item.nickname || item.requester || "許願者";
+  const isDirectShare = !!item.directShare;
+  const requesterName = isDirectShare ? "" : (item.nickname || item.requester || "許願者");
   const historyTimeSource = item.doneAt || item.cancelledAt || item.canceledAt || item.finishedAt || item.historyCreatedAt || item.createdAtSort || item.createdTimestamp || Date.now();
   const finishedTime = formatHistoryTime(historyTimeSource);
+  const stableDirectId = item.sourceWishId || item.id || item.firebaseId || item.historyId || "";
+  const stableNormalId = item.sourceWishId || item.firebaseId || item.id || item.historyId || "";
+  const stableId = isDirectShare ? stableDirectId : stableNormalId;
 
   return {
-    id: item.historyId || item.firebaseId || item.id || Date.now(),
-    sourceWishId: item.sourceWishId || item.firebaseId || item.id || "",
+    id: item.historyId || stableId || Date.now(),
+    sourceWishId: stableId,
     flower: item.flower || "花朵",
     farmer: farmerName,
     requester: requesterName,
-    status: statusText || item.status || "已完成",
+    status: isDirectShare ? (statusText || "花農分享") : (statusText || item.status || "已完成"),
+    directShare: isDirectShare,
     time: item.time || finishedTime,
     createdAt: item.createdAt || historyTimeSource,
     historyCreatedAt: getHistorySortTime({ ...item, time: item.time || finishedTime, historyCreatedAt: historyTimeSource }) || Date.now()
@@ -1075,6 +1080,9 @@ function formatHistoryTime(value) {
 function getWishHistoryUniqueKey(item) {
   const sourceKey = String(item.sourceWishId || item.id || item.firebaseId || "");
   if (sourceKey) {
+    if (item.directShare || String(item.requester || "").includes("花農直接分享") || String(item.status || "").includes("花農分享")) {
+      return sourceKey + "|directShare";
+    }
     return sourceKey + "|" + String(item.status || "");
   }
 
@@ -1141,6 +1149,11 @@ function renderWishHistory() {
     : "";
 
   list.innerHTML = header + pagedRecords.map(function (item) {
+    const isDirectShareHistory = item.directShare || String(item.requester || "").includes("花農直接分享") || String(item.status || "").includes("花農分享");
+    if (isDirectShareHistory) {
+      const directStatus = String(item.status || "") === "已完成" ? "花農分享" : (item.status || "花農分享");
+      return `<div class="wish-history-item">${escapeHtml(item.flower || "花朵")}｜${escapeHtml(item.farmer || "花農")}｜${escapeHtml(directStatus)}｜${escapeHtml(item.time || "")}</div>`;
+    }
     return `<div class="wish-history-item">${escapeHtml(item.flower || "花朵")}｜${escapeHtml(item.farmer || "花農")} → ${escapeHtml(item.requester || "許願者")}｜${escapeHtml(item.status || "已完成")}｜${escapeHtml(item.time || "")}</div>`;
   }).join("") + pagination;
 }
@@ -1199,8 +1212,8 @@ async function confirmDone() {
     const directItem = {
       id: Date.now(),
       flower: flower,
-      nickname: "花農直接分享",
-      requester: "花農直接分享",
+      nickname: "",
+      requester: "",
       farmer: currentName,
       acceptedBy: currentName,
       farmerPlatform: getCurrentPlatform(),
@@ -2246,7 +2259,9 @@ async function startFirebaseSync() {
       } else if (data.status === "done") {
         data.farmer = data.farmer || data.acceptedBy || "花農";
         done.push(data);
-        addLocalWishHistory(makeWishHistoryRecord(data, "已完成"));
+        if (!data.directShare) {
+          addLocalWishHistory(makeWishHistoryRecord(data, "已完成"));
+        }
       } else {
         wishes.push(data);
       }
