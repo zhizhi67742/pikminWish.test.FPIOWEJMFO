@@ -345,7 +345,9 @@ function initFlowerPicker() {
     const flowerName = getTypedFlowerName();
     const selectedFlower = findFlowerByName(flowerName);
     const currentColor = colorSelect.value;
+
     if (selectedFlower && selectedFlower.locked) {
+      colorSelect.style.display = "";
       colorSelect.innerHTML = "";
       const option = document.createElement("option");
       option.value = "";
@@ -354,7 +356,23 @@ function initFlowerPicker() {
       flowerInput.value = "";
       return;
     }
-    const colors = getWishColorOptions(selectedFlower ? selectedFlower.colors : allColors);
+
+    const baseColors = selectedFlower && Array.isArray(selectedFlower.colors) ? selectedFlower.colors : null;
+
+    // 單色花：櫻花、向日葵、粉蝶花等，直接許願，不顯示顏色選單
+    if (selectedFlower && (!baseColors || baseColors.length <= 1)) {
+      colorSelect.style.display = "none";
+      colorSelect.innerHTML = "";
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "單色花";
+      colorSelect.appendChild(option);
+      flowerInput.value = flowerName;
+      return;
+    }
+
+    colorSelect.style.display = "";
+    const colors = getWishColorOptions(baseColors || allColors);
 
     colorSelect.innerHTML = "";
     colors.forEach(function (color) {
