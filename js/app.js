@@ -1,3 +1,4 @@
+const expandedCoordMap = new Map();
 let nickname = "";
 let essenceLimit = 1200;
 let petalLimit = 1200;
@@ -725,6 +726,24 @@ document.addEventListener("click", function (event) {
   if (copyBtn) {
     event.preventDefault();
     copyCoords(copyBtn.dataset.doneKey);
+    return;
+  }
+
+  const toggleCoordBtn = event.target.closest(".toggle-coord-btn[data-target]");
+  if (toggleCoordBtn) {
+    event.preventDefault();
+
+    const targetId = toggleCoordBtn.dataset.target;
+    const target = document.getElementById(targetId);
+    if (!target) return;
+
+    const isHidden = target.style.display === "none" || !target.style.display;
+
+    target.style.display = isHidden ? "block" : "none";
+    toggleCoordBtn.textContent = isHidden ? "隱藏詳細座標" : "顯示詳細座標";
+    expandedCoordMap.set(targetId, isHidden);
+
+    return;
   }
 });
 
@@ -1718,15 +1737,28 @@ function renderDone() {
         <h3>✨ ${escapeHtml(item.flower)}</h3>
         ${donePeopleHtml}
         <p>🌼 採收資訊：${escapeHtml(item.harvestInfo)}</p>
-        <p>📍 分享地點／座標：</p>
-        <pre class="coord-list" id="coord-${item.id}">${escapeHtml(item.location).replace(/\\n/g, "\n")}</pre>
+
+        ${(() => {
+          const coordId = `coord-${item.id}`;
+          const coordOpen = expandedCoordMap.get(coordId) === true;
+          return `
+            <button class="detail-btn toggle-coord-btn" type="button" data-target="${coordId}">
+              ${coordOpen ? "隱藏詳細座標" : "顯示詳細座標"}
+            </button>
+
+            <div id="${coordId}" style="display:${coordOpen ? "block" : "none"}; margin-top:10px;">
+              <p>📍 座標：</p>
+              <pre class="coord-list">${escapeHtml(item.location).replace(/\\n/g, "\n")}</pre>
+            </div>
+          `;
+        })()}
 
         <div class="done-actions">
           <button class="like-btn ${item.liked ? "liked" : ""}" type="button" data-done-key="${escapeHtml(doneKey)}">
             👍 ${item.likes}
           </button>
           <button class="copy-btn" type="button" data-done-key="${escapeHtml(doneKey)}">
-            快速複製整串座標
+            快速複製座標
           </button>
         </div>
 
