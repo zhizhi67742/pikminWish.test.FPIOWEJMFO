@@ -752,7 +752,7 @@ label textarea {
 .clear-input-btn {
   position: absolute;
   right: 10px;
-  top: 38%;
+  top: 50%;
   transform: translateY(-50%);
   width: 22px;
   height: 22px;
@@ -4679,3 +4679,18 @@ html {
   transform: translateX(-50%) translateY(0);
 }
 
+
+
+/* Precise center fix for flower/dex clear X buttons */
+.clearable-input .clear-input-btn {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 20px !important;
+  padding: 0 !important;
+}
+.clearable-input .clear-input-btn:hover {
+  transform: translateY(-50%) !important;
+}
