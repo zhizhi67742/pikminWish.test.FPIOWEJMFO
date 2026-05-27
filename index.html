@@ -817,7 +817,7 @@ h1 {
     </div>
   </div>
 
-  <script src="js/app.js?v=dropdown-under-input-fix-20260526"></script>
+  <script src="js/app.js?v=upload-button-hotfix-20260528"></script>
 
   <!-- Firebase -->
   <script type="module">
@@ -1022,7 +1022,7 @@ const firebaseConfig = {
 </div>
 
 <div>
-    © 2026 梔梔 v1.1.0 ｜ 許願池及花朵圖鑑
+    © 2026 梔梔 v1.2.0 ｜ 許願池及花朵圖鑑
   </div>
 </div>
 
@@ -1054,70 +1054,8 @@ const firebaseConfig = {
 </script>
 
 
-<script>
-(function () {
-  function normalizeNickname(name) {
-    return String(name || "").trim().replace(/_(LINE|DC)$/i, "");
-  }
+<!-- enterWebsite 由 js/app.js 統一控制，避免覆蓋 Google 登入檢查 -->
 
-  function normalizePlatform(platform) {
-    platform = String(platform || "LINE").trim().toUpperCase();
-    return platform === "DC" ? "DC" : "LINE";
-  }
-
-  function platformTagHtml(platform) {
-    return ' <span class="name-platform-tag">' + normalizePlatform(platform) + '</span>';
-  }
-
-  function closeNicknameGate() {
-    const gate = document.getElementById("nicknameGate");
-    if (!gate) return;
-    gate.classList.add("hidden-gate");
-    gate.style.setProperty("display", "none", "important");
-    gate.style.setProperty("visibility", "hidden", "important");
-    gate.style.setProperty("pointer-events", "none", "important");
-    document.body.style.overflow = "";
-  }
-
-  window.enterWebsite = function (event) {
-    if (event && typeof event.preventDefault === "function") event.preventDefault();
-    if (event && typeof event.stopImmediatePropagation === "function") event.stopImmediatePropagation();
-    if (event && typeof event.stopPropagation === "function") event.stopPropagation();
-
-    const input = document.getElementById("gateNicknameInput");
-    const select = document.getElementById("socialTypeSelect");
-    const raw = input ? input.value.trim() : "";
-    const platform = select ? select.value : "LINE";
-
-    if (!raw) {
-      alert("請輸入 LINE 社群或 DC 暱稱");
-      if (input) input.focus();
-      return false;
-    }
-
-    const finalNickname = normalizeNickname(raw);
-    const finalPlatform = normalizePlatform(platform);
-    localStorage.setItem("flowerWishNickname", finalNickname);
-    localStorage.setItem("flowerWishPlatform", finalPlatform);
-    window.nickname = finalNickname;
-
-    const mainInput = document.getElementById("nicknameInput");
-    if (mainInput) mainInput.value = finalNickname;
-
-    const currentText = document.getElementById("currentNicknameText");
-    if (currentText) currentText.innerHTML = finalNickname + platformTagHtml(finalPlatform);
-
-    closeNicknameGate();
-    return false;
-  };
-
-  document.addEventListener("click", function (event) {
-    const btn = event.target.closest && event.target.closest("#enterWebsiteBtn, .enter-btn");
-    if (!btn) return;
-    window.enterWebsite(event);
-  }, true);
-})();
-</script>
 
 
 <script>
