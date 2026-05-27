@@ -1743,7 +1743,6 @@ function renderPending() {
           <p>👤 許願者：</p>
           <ul>${requesterList}</ul>
         </div>
-        <p class="hint">狀態：花農已接單，待完成分享。</p>
         ${actionButton}
       </article>
     `;
