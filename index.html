@@ -682,11 +682,30 @@ h1 {
       <h2 id="doneModalTitle">完成分享</h2>
       <p id="doneModalDesc">請輸入採收資訊與分享地點。分享地點可以直接貼上多行座標。</p>
 
-      <input
-        id="harvestInfoInput"
-        type="text"
-        placeholder="採收資訊，例如：印度、8朵、首花時間、隨意收"
-      />
+      <div class="harvest-copy-row" style="display:flex;gap:8px;align-items:center;">
+        <input
+          id="harvestInfoInput"
+          type="text"
+          placeholder="採收資訊，例如：印度、8朵、首花時間、隨意收"
+          style="flex:1;"
+        />
+        <button
+          type="button"
+          onclick="copyHarvestInfo()"
+          title="快速複製"
+          style="
+            width:42px;
+            height:42px;
+            border:none;
+            border-radius:12px;
+            background:#5f8f6d;
+            color:white;
+            font-size:20px;
+            cursor:pointer;
+            flex-shrink:0;
+          "
+        >📋</button>
+      </div>
 
 
       <div class="harvest-quick-tags">

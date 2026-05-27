@@ -1560,16 +1560,11 @@ function openWishDetailModal(groupKeysText) {
       ${timeGroups.map(function (timeGroup) {
         const timeWishKeys = timeGroup.items.map(function (wish) { return getWishKey(wish); }).join("||");
         const peopleHtml = timeGroup.items.map(function (wish) {
-          const canDelete = !wish.isExample && getCurrentNickname() && String(getCurrentNickname()).trim() === String(wish.nickname).trim();
-          const deleteButton = canDelete
-            ? `<button class="delete-btn compact-delete-btn" type="button" data-delete-wish="${escapeHtml(getWishKey(wish))}">🗑️ 刪除</button>`
-            : "";
           return `
             <div class="wish-detail-person">
               <p>👤 ${displayNameWithTagHtml(wish.nickname || "匿名許願者", wish.requesterPlatform || wish.platform)}</p>
               <p>💬 ${escapeHtml(wish.message || "沒有留言")}</p>
               ${wish.lastCancelReason || wish.cancelReason ? `<p class="hint cancel-reason">上次取消原因：${escapeHtml(wish.lastCancelReason || wish.cancelReason)}</p>` : ""}
-              ${deleteButton}
             </div>
           `;
         }).join("");
@@ -1787,6 +1782,50 @@ async function toggleLike(id) {
       alert("讚數同步失敗，請稍後再試。");
     }
   }
+}
+
+
+
+function copyHarvestInfo() {
+  const harvestInput = document.getElementById("harvestInfoInput");
+  const locationInput = document.getElementById("shareLocationInput");
+
+  const harvestInfo = harvestInput ? harvestInput.value.trim() : "";
+  const locationText = "https://zhizhi67742.github.io/pikmin-wish/";
+
+  let flowerName = "";
+
+  if (selectedPendingId === "__farmer_direct_share__") {
+    flowerName = document.getElementById("flowerInput")?.value?.trim() || "";
+  } else {
+    const selectedPendingKeys = String(selectedPendingId || "").split("||").filter(Boolean);
+    const target = pending.find(function (item) {
+      return selectedPendingKeys.includes(String(getWishKey(item)));
+    });
+
+    if (target) {
+      flowerName = target.flower || "";
+    }
+  }
+
+  const copyText = `${flowerName} / ${harvestInfo}\n-\n${locationText}`.trim();
+
+  if (!copyText) {
+    alert("沒有可複製的內容！");
+    return;
+  }
+
+  navigator.clipboard.writeText(copyText).then(function () {
+    alert("已複製！");
+  }).catch(function () {
+    const temp = document.createElement("textarea");
+    temp.value = copyText;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+    alert("已複製！");
+  });
 }
 
 function copyCoords(id) {
@@ -3315,9 +3354,7 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
       }
 
       myWishes.forEach(function(wish){
-        removeWishByKey(getWishKey(wish));
+        deleteWish(getWishKey(wish));
       });
-
-      renderAll();
     }
   });

@@ -4287,3 +4287,55 @@ html {
     font-size: 10.5px;
   }
 }
+
+/* 修正詳細資訊視窗內「我可以幫忙」按鈕跑版 */
+.wish-detail-modal .wish-time-group-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wish-detail-modal .wish-detail-people {
+  width: 100%;
+}
+
+.wish-detail-modal .wish-time-group-detail .help-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 4px 0 0 !important;
+  padding: 13px 16px;
+  border: 0;
+  border-radius: 17px;
+  background: #7dbb6f;
+  color: #1e2d3d;
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+}
+
+.wish-detail-modal .wish-time-group-detail .help-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+@media (max-width: 640px) {
+  .wish-detail-modal {
+    padding: 12px;
+    align-items: center;
+  }
+
+  .wish-detail-modal .wish-detail-box {
+    width: min(94vw, 540px);
+    max-height: 86vh;
+    padding: 22px 16px;
+  }
+
+  .wish-detail-modal .wish-time-group-detail .help-btn {
+    padding: 12px 14px;
+    border-radius: 15px;
+  }
+}
