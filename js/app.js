@@ -3554,3 +3554,61 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
       });
     }
   });
+
+/* ===== HOTFIX 2026-05-28: 防止「確認上傳座標」失敗後卡住整個畫面 ===== */
+(function () {
+  const originalConfirmDone = window.confirmDone || (typeof confirmDone === "function" ? confirmDone : null);
+  if (!originalConfirmDone) return;
+
+  function getUploadConfirmButton() {
+    const modal = document.getElementById("uploadConfirmModal");
+    return modal ? modal.querySelector(".confirm-btn") : null;
+  }
+
+  function hideUploadConfirmOnly() {
+    const uploadModal = document.getElementById("uploadConfirmModal");
+    if (uploadModal) uploadModal.classList.remove("show");
+  }
+
+  window.confirmDone = async function () {
+    const button = getUploadConfirmButton();
+    const oldText = button ? button.textContent : "";
+
+    if (button && button.disabled) return;
+
+    try {
+      if (button) {
+        button.disabled = true;
+        button.textContent = "上傳中...";
+      }
+
+      // 避免待完成資料已被同步搬走/重整後，selectedPendingId 找不到時直接 return，導致確認視窗卡在畫面上擋住其他按鈕。
+      if (selectedPendingId && selectedPendingId !== "__farmer_direct_share__") {
+        const selectedKeys = String(selectedPendingId || "").split("||").filter(Boolean);
+        const keySet = new Set(selectedKeys);
+        const hasTarget = pending.some(function (item) {
+          return keySet.has(String(getWishKey(item)));
+        });
+
+        if (!hasTarget) {
+          hideUploadConfirmOnly();
+          selectedPendingId = null;
+          alert("這筆待完成資料已更新或不存在，請重新整理後再試一次。");
+          renderAll();
+          return;
+        }
+      }
+
+      await originalConfirmDone.apply(this, arguments);
+    } catch (error) {
+      console.error("確認上傳座標失敗", error);
+      hideUploadConfirmOnly();
+      alert("上傳時發生錯誤，已先解除卡住狀態。請重新整理後再試一次。");
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = oldText || "確認上傳";
+      }
+    }
+  };
+})();
