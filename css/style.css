@@ -4508,3 +4508,19 @@ html {
     padding: 0 6px !important;
   }
 }
+
+/* === FINAL FIX: restore rounded corners on confirm take-order buttons === */
+#confirmModal .modal-actions > button,
+#confirmModal .modal-actions .cancel-btn,
+#confirmModal .modal-actions .confirm-btn {
+  border-radius: 17px !important;
+  overflow: hidden !important;
+}
+
+@media (max-width: 640px) {
+  #confirmModal .modal-actions > button,
+  #confirmModal .modal-actions .cancel-btn,
+  #confirmModal .modal-actions .confirm-btn {
+    border-radius: 17px !important;
+  }
+}
