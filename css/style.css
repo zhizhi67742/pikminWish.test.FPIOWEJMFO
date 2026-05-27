@@ -453,29 +453,6 @@ label textarea {
   color: #1e2d3d;
 }
 
-.modal-actions button {
-  min-width: 0;
-  white-space: nowrap;
-}
-
-@media (max-width: 640px) {
-  .modal-actions {
-    flex-direction: row;
-    gap: 8px;
-  }
-
-  .modal-actions button {
-    font-size: 14px;
-    padding: 12px 8px;
-  }
-
-  .modal-box {
-    width: calc(100vw - 32px);
-    max-width: 420px;
-  }
-}
-
-
 .dex-list {
   display: grid;
   gap: 18px;
@@ -4422,5 +4399,25 @@ html {
     min-width: 42px !important;
     height: 42px !important;
     margin-top: 8px !important;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .modal-actions button,
+  .cancel-btn,
+  .confirm-btn {
+    flex: 1 1 0;
+    width: 50%;
+    min-width: 0;
+    padding: 12px 8px;
+    font-size: 14px;
+    white-space: nowrap;
   }
 }
