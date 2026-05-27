@@ -3661,7 +3661,7 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
           })
           .catch(function (error) {
             console.error("Firebase 花農座標同步逾時或失敗", error);
-            alert("畫面已先完成，但雲端同步可能失敗。請重新整理後確認是否有上傳成功。");
+            alert("畫面已先完成，但。請重新整理後確認是否有上傳成功。");
           });
       }
       safeSyncWishHistory(historyRecord);
@@ -3739,7 +3739,7 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
           likes: item.likes || 0
         }), 8000, "完成同步").catch(function (error) {
           console.error("Firebase 完成同步逾時或失敗", error);
-          alert("畫面已先完成，但雲端同步可能失敗。請重新整理後確認是否還在待完成區。");
+          alert("畫面已先完成，但。請重新整理後確認是否還在待完成區。");
         });
       }
     }
