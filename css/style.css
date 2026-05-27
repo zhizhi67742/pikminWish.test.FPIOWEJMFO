@@ -4524,3 +4524,22 @@ html {
     border-radius: 17px !important;
   }
 }
+
+/* ===== FIX: 確認接單彈窗按鈕圓角恢復（覆蓋前面 border-radius:0） ===== */
+#confirmModal .modal-actions button,
+#confirmModal .modal-actions .confirm-btn,
+#confirmModal .modal-actions .cancel-btn {
+  border-radius: 17px !important;
+  overflow: hidden;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+@media (max-width: 640px) {
+  #confirmModal .modal-actions button,
+  #confirmModal .modal-actions .confirm-btn,
+  #confirmModal .modal-actions .cancel-btn {
+    border-radius: 17px !important;
+    height: 42px !important;
+  }
+}
