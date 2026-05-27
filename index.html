@@ -425,7 +425,7 @@ h1 {
         </div>
       </section>
 
-      <section class="section-title collapse-title">
+      <section id="quick-wish" class="section-title collapse-title">
         <button type="button" class="collapse-btn" data-collapse-target="wishList" aria-expanded="true">
           <span>🌸 許願區</span>
           <span class="collapse-icon">▼</span>
@@ -438,7 +438,7 @@ h1 {
       </section>
       <div id="wishList" class="card-grid collapse-content"></div>
 
-      <section class="section-title collapse-title">
+      <section id="quick-pending" class="section-title collapse-title">
         <button type="button" class="collapse-btn" data-collapse-target="pendingList" aria-expanded="true">
           <span>🌱 待完成區</span>
           <span class="collapse-icon">▼</span>
@@ -451,7 +451,7 @@ h1 {
       </section>
       <div id="pendingList" class="card-grid collapse-content"></div>
 
-      <section class="section-title collapse-title">
+      <section id="quick-done" class="section-title collapse-title">
         <button type="button" class="collapse-btn" data-collapse-target="doneList" aria-expanded="true">
           <span>✨ 已完成區</span>
           <span class="collapse-icon">▼</span>
@@ -1117,5 +1117,11 @@ document.addEventListener("DOMContentLoaded", () => {
   syncButtonStates();
 });
 </script>
+  <nav class="quick-bookmark-nav" aria-label="訂單快速跳轉">
+    <a href="#quick-wish" onclick="jumpToOrderSection(event, 'quick-wish')">🌸 許願區</a>
+    <a href="#quick-pending" onclick="jumpToOrderSection(event, 'quick-pending')">🌱 待完成</a>
+    <a href="#quick-done" onclick="jumpToOrderSection(event, 'quick-done')">✅ 已完成</a>
+  </nav>
+
 </body>
 </html>

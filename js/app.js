@@ -442,6 +442,27 @@ function showSection(sectionId, btn) {
   btn.classList.add("active");
 }
 
+
+function jumpToOrderSection(event, targetId) {
+  if (event) event.preventDefault();
+
+  const wishBtn = document.querySelector('.nav-btn[onclick*="showSection(\'wish\'"]') ||
+    document.querySelector('.nav-btn[onclick*="showSection(&quot;wish&quot;"]') ||
+    document.querySelector('.nav-btn');
+
+  if (typeof showSection === 'function' && wishBtn) {
+    showSection('wish', wishBtn);
+  }
+
+  setTimeout(function () {
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', '#' + targetId);
+    }
+  }, 60);
+}
+
 function saveNickname() {
   const input = document.getElementById("nicknameInput");
   if (!input) return;
@@ -1539,11 +1560,16 @@ function openWishDetailModal(groupKeysText) {
       ${timeGroups.map(function (timeGroup) {
         const timeWishKeys = timeGroup.items.map(function (wish) { return getWishKey(wish); }).join("||");
         const peopleHtml = timeGroup.items.map(function (wish) {
+          const canDelete = !wish.isExample && getCurrentNickname() && String(getCurrentNickname()).trim() === String(wish.nickname).trim();
+          const deleteButton = canDelete
+            ? `<button class="delete-btn compact-delete-btn" type="button" data-delete-wish="${escapeHtml(getWishKey(wish))}">🗑️ 刪除</button>`
+            : "";
           return `
             <div class="wish-detail-person">
               <p>👤 ${displayNameWithTagHtml(wish.nickname || "匿名許願者", wish.requesterPlatform || wish.platform)}</p>
               <p>💬 ${escapeHtml(wish.message || "沒有留言")}</p>
               ${wish.lastCancelReason || wish.cancelReason ? `<p class="hint cancel-reason">上次取消原因：${escapeHtml(wish.lastCancelReason || wish.cancelReason)}</p>` : ""}
+              ${deleteButton}
             </div>
           `;
         }).join("");
@@ -3288,11 +3314,10 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
         return;
       }
 
-      myWishes.map(function(wish){ return getWishKey(wish); }).forEach(function(wishKey){
-        deleteWish(wishKey);
+      myWishes.forEach(function(wish){
+        removeWishByKey(getWishKey(wish));
       });
 
-      closeWishDetailModal();
       renderAll();
     }
   });
