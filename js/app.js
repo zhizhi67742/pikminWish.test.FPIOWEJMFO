@@ -3555,10 +3555,18 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
     }
   });
 
-/* ===== HOTFIX 2026-05-28: 防止「確認上傳座標」失敗後卡住整個畫面 ===== */
+/* ===== HOTFIX 2026-05-28: 防止「確認上傳座標」卡在「上傳中...」 ===== */
 (function () {
-  const originalConfirmDone = window.confirmDone || (typeof confirmDone === "function" ? confirmDone : null);
-  if (!originalConfirmDone) return;
+  function withTimeout(promise, ms, label) {
+    return Promise.race([
+      Promise.resolve(promise),
+      new Promise(function (_, reject) {
+        setTimeout(function () {
+          reject(new Error((label || "雲端同步") + "逾時"));
+        }, ms || 8000);
+      })
+    ]);
+  }
 
   function getUploadConfirmButton() {
     const modal = document.getElementById("uploadConfirmModal");
@@ -3570,10 +3578,185 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
     if (uploadModal) uploadModal.classList.remove("show");
   }
 
+  async function safeSyncWishHistory(record) {
+    if (!window.firebaseDB || !window.firebaseFns) return;
+    const { collection, addDoc } = window.firebaseFns;
+    try {
+      await withTimeout(addDoc(collection(window.firebaseDB, "wishHistory"), record), 8000, "歷史紀錄同步");
+    } catch (error) {
+      console.error("Firebase 歷史許願同步逾時或失敗", error);
+    }
+  }
+
+  async function safeConfirmDone() {
+    const harvestInfo = document.getElementById("harvestInfoInput").value.trim();
+    const rawLocation = document.getElementById("shareLocationInput").value;
+    const location = cleanCoordinates(rawLocation);
+
+    if (!location) {
+      alert("請輸入有效座標，例如：22.817601,89.563802");
+      return;
+    }
+
+    if (selectedPendingId === "__farmer_direct_share__") {
+      const flower = document.getElementById("flowerInput")?.value?.trim();
+      const currentName = getCurrentNickname();
+
+      if (!currentName) {
+        alert("請先設定暱稱，才能上傳花農座標。");
+        return;
+      }
+
+      if (!flower) {
+        alert("請先選擇或輸入花種。");
+        return;
+      }
+
+      if (isLockedWishFlowerValue(flower)) {
+        warnLockedFlower();
+        resetFlowerPicker();
+        return;
+      }
+
+      const startHour = document.getElementById("startHour")?.value || "14";
+      const startMinute = document.getElementById("startMinute")?.value || "00";
+      const endHour = document.getElementById("endHour")?.value || "20";
+      const endMinute = document.getElementById("endMinute")?.value || "00";
+      const message = document.getElementById("messageInput")?.value?.trim() || "花農直接分享";
+
+      const directItem = {
+        id: Date.now(),
+        flower: flower,
+        nickname: "",
+        requester: "",
+        farmer: currentName,
+        acceptedBy: currentName,
+        farmerPlatform: getCurrentPlatform(),
+        acceptedByPlatform: getCurrentPlatform(),
+        requesterPlatform: "",
+        createdAt: formatNow(),
+        createdTimestamp: Date.now(),
+        timeRange: `${startHour}:${startMinute} - ${endHour}:${endMinute}`,
+        message: message,
+        harvestInfo: harvestInfo || "沒有補充採收資訊",
+        location: location,
+        doneAt: Date.now(),
+        deleteAt: Date.now() + 60 * 60 * 1000,
+        likes: 0,
+        liked: false,
+        status: "done",
+        directShare: true
+      };
+
+      const historyRecord = makeWishHistoryRecord(directItem, "花農分享");
+      done.push(directItem);
+      addLocalWishHistory(historyRecord);
+
+      if (window.firebaseDB && window.firebaseFns) {
+        const { collection, addDoc } = window.firebaseFns;
+        withTimeout(addDoc(collection(window.firebaseDB, "wishes"), directItem), 8000, "花農分享同步")
+          .then(function (docRef) {
+            if (docRef && docRef.id) directItem.firebaseId = docRef.id;
+            saveData();
+          })
+          .catch(function (error) {
+            console.error("Firebase 花農座標同步逾時或失敗", error);
+            alert("畫面已先完成，但雲端同步可能失敗。請重新整理後確認是否有上傳成功。");
+          });
+      }
+      safeSyncWishHistory(historyRecord);
+
+      selectedPendingId = null;
+      document.getElementById("shareLocationInput").value = "";
+      document.getElementById("harvestInfoInput").value = "";
+      document.getElementById("messageInput").value = "";
+      document.getElementById("flowerInput").value = "";
+      resetFlowerPicker();
+      closeDoneModal();
+      hideUploadConfirmOnly();
+      saveData();
+      renderAll();
+      alert("已上傳到已完成區。\n提醒：這邊不會自動通知，請記得貼到種花群喔！");
+      return;
+    }
+
+    const selectedPendingKeys = String(selectedPendingId || "").split("||").filter(Boolean);
+    const keySet = new Set(selectedPendingKeys);
+    const targetIndexes = [];
+
+    pending.forEach(function (item, index) {
+      if (keySet.has(String(getWishKey(item)))) targetIndexes.push(index);
+    });
+
+    if (!targetIndexes.length) {
+      selectedPendingId = null;
+      hideUploadConfirmOnly();
+      alert("這筆待完成資料已更新或不存在，請重新整理後再試一次。");
+      renderAll();
+      return;
+    }
+
+    const targets = targetIndexes.map(function (index) { return pending[index]; });
+
+    if (!targets.every(function (item) { return isCurrentUserFarmer(item); })) {
+      alert("只有接單花農可以送出完成分享。");
+      return;
+    }
+
+    const currentNickname = getCurrentNickname();
+    const doneItems = targetIndexes.sort(function (a, b) { return b - a; }).map(function (index) {
+      return pending.splice(index, 1)[0];
+    }).reverse();
+
+    for (const item of doneItems) {
+      item.harvestInfo = harvestInfo || "沒有補充採收資訊";
+      item.location = location;
+      if (typeof item.id === "undefined") item.id = Date.now();
+      item.doneAt = Date.now();
+      item.deleteAt = Date.now() + 60 * 60 * 1000;
+      item.likes = 0;
+      item.liked = false;
+      item.status = "done";
+      item.farmer = item.farmer || item.acceptedBy || currentNickname;
+      item.acceptedBy = item.acceptedBy || item.farmer || currentNickname;
+
+      done.push(item);
+
+      const historyRecord = makeWishHistoryRecord(item, "已完成");
+      addLocalWishHistory(historyRecord);
+      safeSyncWishHistory(historyRecord);
+
+      if (item.firebaseId && window.firebaseDB && window.firebaseFns) {
+        const { updateDoc, doc } = window.firebaseFns;
+        withTimeout(updateDoc(doc(window.firebaseDB, "wishes", item.firebaseId), {
+          status: "done",
+          harvestInfo: item.harvestInfo,
+          location: item.location,
+          doneAt: item.doneAt,
+          deleteAt: item.deleteAt,
+          farmer: item.farmer,
+          acceptedBy: item.acceptedBy,
+          likes: item.likes || 0
+        }), 8000, "完成同步").catch(function (error) {
+          console.error("Firebase 完成同步逾時或失敗", error);
+          alert("畫面已先完成，但雲端同步可能失敗。請重新整理後確認是否還在待完成區。");
+        });
+      }
+    }
+
+    selectedPendingId = null;
+    document.getElementById("shareLocationInput").value = "";
+    document.getElementById("harvestInfoInput").value = "";
+    closeDoneModal();
+    hideUploadConfirmOnly();
+    saveData();
+    renderAll();
+    alert("⚠️ 提醒：這邊不會自動通知許願者\n請記得把完成分享貼到種花群，讓對方看到喔！");
+  }
+
   window.confirmDone = async function () {
     const button = getUploadConfirmButton();
     const oldText = button ? button.textContent : "";
-
     if (button && button.disabled) return;
 
     try {
@@ -3581,29 +3764,11 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
         button.disabled = true;
         button.textContent = "上傳中...";
       }
-
-      // 避免待完成資料已被同步搬走/重整後，selectedPendingId 找不到時直接 return，導致確認視窗卡在畫面上擋住其他按鈕。
-      if (selectedPendingId && selectedPendingId !== "__farmer_direct_share__") {
-        const selectedKeys = String(selectedPendingId || "").split("||").filter(Boolean);
-        const keySet = new Set(selectedKeys);
-        const hasTarget = pending.some(function (item) {
-          return keySet.has(String(getWishKey(item)));
-        });
-
-        if (!hasTarget) {
-          hideUploadConfirmOnly();
-          selectedPendingId = null;
-          alert("這筆待完成資料已更新或不存在，請重新整理後再試一次。");
-          renderAll();
-          return;
-        }
-      }
-
-      await originalConfirmDone.apply(this, arguments);
+      await safeConfirmDone();
     } catch (error) {
       console.error("確認上傳座標失敗", error);
       hideUploadConfirmOnly();
-      alert("上傳時發生錯誤，已先解除卡住狀態。請重新整理後再試一次。");
+      alert("上傳時發生錯誤，已解除卡住狀態。請重新整理後再試一次。");
     } finally {
       if (button) {
         button.disabled = false;
@@ -3611,4 +3776,8 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
       }
     }
   };
+
+  try {
+    confirmDone = window.confirmDone;
+  } catch (error) {}
 })();
