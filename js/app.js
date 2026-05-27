@@ -1524,6 +1524,8 @@ async function confirmDone() {
     return;
   }
 
+  const currentNickname = getCurrentNickname();
+
   const doneItems = targetIndexes.sort(function (a, b) { return b - a; }).map(function (index) {
     return pending.splice(index, 1)[0];
   }).reverse();
@@ -1552,8 +1554,8 @@ async function confirmDone() {
           location: item.location,
           doneAt: item.doneAt,
           deleteAt: item.deleteAt,
-          farmer: item.farmer || item.acceptedBy || nickname,
-          acceptedBy: item.acceptedBy || item.farmer || nickname,
+          farmer: item.farmer || item.acceptedBy || currentNickname,
+          acceptedBy: item.acceptedBy || item.farmer || currentNickname,
           likes: item.likes || 0
         });
       } catch (error) {
