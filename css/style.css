@@ -1584,7 +1584,7 @@ label textarea {
     font-size:14px !important;
     writing-mode:horizontal-tb !important;
     white-space:nowrap;
-    border-radius:0 !important;
+    border-radius:17px !important;
   }
 
   .status-full,
@@ -4567,5 +4567,25 @@ html {
     height: 42px !important;
     min-height: 42px !important;
     border-radius: 17px !important;
+  }
+}
+
+
+/* ===== FINAL MOBILE BUTTON RADIUS LOCK 20260527 =====
+   手機版先前有樣式把 .confirm-btn 蓋成直角，這段放在最後統一鎖定彈窗確認按鈕圓角。 */
+@media (max-width: 768px) {
+  #confirmModal .modal-actions > button.confirm-btn,
+  #confirmModal .modal-actions > button.cancel-btn,
+  #uploadConfirmModal .modal-actions > button.confirm-btn,
+  #uploadConfirmModal .modal-actions > button.cancel-btn,
+  #doneModal .modal-actions > button.confirm-btn,
+  #doneModal .modal-actions > button.cancel-btn {
+    border-radius: 17px !important;
+    -webkit-border-radius: 17px !important;
+    overflow: hidden !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    height: 42px !important;
+    min-height: 42px !important;
   }
 }
