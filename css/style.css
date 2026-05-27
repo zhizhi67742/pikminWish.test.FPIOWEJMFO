@@ -4543,3 +4543,29 @@ html {
     height: 42px !important;
   }
 }
+
+/* ===== FIX: 上傳座標確認上傳按鈕圓角恢復 ===== */
+#uploadConfirmModal .modal-actions button,
+#uploadConfirmModal .modal-actions .confirm-btn,
+#uploadConfirmModal .modal-actions .cancel-btn,
+#doneModal .modal-actions button,
+#doneModal .modal-actions .confirm-btn,
+#doneModal .modal-actions .cancel-btn {
+  border-radius: 17px !important;
+  overflow: hidden !important;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+@media (max-width: 640px) {
+  #uploadConfirmModal .modal-actions button,
+  #uploadConfirmModal .modal-actions .confirm-btn,
+  #uploadConfirmModal .modal-actions .cancel-btn,
+  #doneModal .modal-actions button,
+  #doneModal .modal-actions .confirm-btn,
+  #doneModal .modal-actions .cancel-btn {
+    height: 42px !important;
+    min-height: 42px !important;
+    border-radius: 17px !important;
+  }
+}
