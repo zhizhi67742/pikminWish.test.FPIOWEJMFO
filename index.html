@@ -1096,6 +1096,11 @@ const firebaseConfig = {
       return false;
     }
 
+    if (!window.firebaseAuth || !window.firebaseAuth.currentUser) {
+      alert("請先使用 Google 登入");
+      return false;
+    }
+
     const finalNickname = normalizeNickname(raw);
     const finalPlatform = normalizePlatform(platform);
     localStorage.setItem("flowerWishNickname", finalNickname);
