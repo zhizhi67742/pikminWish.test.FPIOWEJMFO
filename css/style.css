@@ -453,6 +453,29 @@ label textarea {
   color: #1e2d3d;
 }
 
+.modal-actions button {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .modal-actions {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .modal-actions button {
+    font-size: 14px;
+    padding: 12px 8px;
+  }
+
+  .modal-box {
+    width: calc(100vw - 32px);
+    max-width: 420px;
+  }
+}
+
+
 .dex-list {
   display: grid;
   gap: 18px;
@@ -4402,22 +4425,86 @@ html {
   }
 }
 
+/* === FINAL FIX: 統一所有操作按鈕大小（手機/電腦） === */
+.card .pending-actions,
+.card .done-actions,
+.modal-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+}
 
-@media (max-width: 768px) {
-  .modal-actions {
-    display: flex;
-    gap: 10px;
-    width: 100%;
+.card .pending-actions > button,
+.card .done-actions > button,
+.modal-actions > button {
+  flex: 1 1 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 46px !important;
+  height: 46px !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 12px !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  font-size: 15px !important;
+}
+
+.card .pending-actions {
+  margin-top: 16px !important;
+}
+
+.card .done-actions {
+  margin-top: 14px !important;
+}
+
+.card .pending-actions .done-btn,
+.card .pending-actions .cancel-take-btn {
+  margin-top: 0 !important;
+}
+
+.card .done-actions .like-btn,
+.card .done-actions .copy-btn {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+@media (max-width: 640px) {
+  /* 覆蓋前面 mobile 的 button { width:100%; }，避免同排按鈕被撐壞 */
+  .modal-actions > button,
+  .card .pending-actions > button,
+  .card .done-actions > button {
+    width: auto !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 8px !important;
+    font-size: 14px !important;
   }
 
-  .modal-actions button,
-  .cancel-btn,
-  .confirm-btn {
-    flex: 1 1 0;
-    width: 50%;
-    min-width: 0;
-    padding: 12px 8px;
-    font-size: 14px;
-    white-space: nowrap;
+  .modal-actions {
+    flex-direction: row !important;
+  }
+
+  .card .pending-actions,
+  .card .done-actions {
+    flex-direction: row !important;
+  }
+
+  .card .done-actions .copy-btn {
+    font-size: 13px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .modal-actions > button,
+  .card .pending-actions > button,
+  .card .done-actions > button {
+    font-size: 12.5px !important;
+    padding: 0 6px !important;
   }
 }
