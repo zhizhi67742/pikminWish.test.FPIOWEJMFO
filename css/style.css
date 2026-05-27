@@ -4339,3 +4339,65 @@ html {
     border-radius: 15px;
   }
 }
+
+
+/* 採收資訊快速複製按鈕 */
+.harvest-copy-row {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.harvest-copy-row #harvestInfoInput {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.harvest-copy-btn {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  border: none !important;
+  border-radius: 12px !important;
+  background: #5f8f6d !important;
+  color: #fff !important;
+  font-size: 20px !important;
+  cursor: pointer !important;
+  flex: 0 0 42px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.harvest-copy-btn:active {
+  transform: scale(0.96);
+}
+
+@media (max-width: 768px) {
+  #doneModal .harvest-copy-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  #doneModal .harvest-copy-row #harvestInfoInput {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin-top: 8px !important;
+  }
+
+  #doneModal .harvest-copy-row .harvest-copy-btn {
+    display: inline-flex !important;
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    margin-top: 8px !important;
+  }
+}
