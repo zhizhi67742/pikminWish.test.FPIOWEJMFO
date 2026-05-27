@@ -2937,6 +2937,10 @@ function orderCardBelongsToMe(card, listId, currentName) {
   const cleanName = normalizeOrderText(currentName);
 
   if (listId === "wishList") {
+    if (card.querySelector(".outer-delete-btn")) {
+      return true;
+    }
+
     const wishOwner = getFieldValueFromCard(card, ["許願者：", "許願者", "暱稱：", "暱稱"]);
     return normalizeOrderText(wishOwner).includes(cleanName);
   }
