@@ -132,56 +132,56 @@ function setLikedDoneKey(doneKey, liked) {
 }
 
 const DEFAULT_FLOWER_DEX = [
-  { name: "風鈴草", subtitle: "6月新花・目前無法獲得", colors: ["白", "紅", "藍"], locked: true },
-  { name: "勿忘草", colors: ["白", "黃", "紅", "藍"] },
-  { name: "週年玫瑰", colors: ["白", "黃", "紅", "藍"] },
-  { name: "銀蓮花", colors: ["白", "黃", "紅", "藍"] },
-  { name: "九重葛", colors: ["白", "黃", "紅", "藍"] },
-  { name: "海芋", colors: ["白", "黃", "紅", "藍"] },
-  { name: "山茶花", colors: ["白", "黃", "紅", "藍"] },
-  { name: "油菜花", colors: ["白", "黃", "藍"] },
-  { name: "康乃馨", colors: ["白", "黃", "紅", "藍"] },
-  { name: "嘉德麗雅蘭", colors: ["白", "黃", "紅", "藍"] },
-  { name: "雞冠花", colors: ["白", "黃", "紅", "藍"] },
-  { name: "櫻花", colors: ["白"] },
-  { name: "菊花", colors: ["白", "黃", "紅", "藍"] },
-  { name: "鐵線蓮", colors: ["白", "黃", "紅", "藍"] },
-  { name: "彼岸花", colors: ["白", "黃", "紅"] },
-  { name: "鈴蘭", colors: ["白", "紅"] },
-  { name: "大波斯菊", colors: ["白", "黃", "紅"] },
-  { name: "兔耳花", colors: ["白", "紅", "藍"] },
-  { name: "大理花", colors: ["白", "黃", "紅", "藍"] },
-  { name: "石竹", colors: ["白", "紅", "藍"] },
-  { name: "小蒼蘭", colors: ["白", "黃", "紅", "藍"] },
-  { name: "龍膽", colors: ["白", "紅", "藍"] },
-  { name: "聖誕玫瑰", colors: ["白", "黃", "紅", "藍"] },
-  { name: "扶桑花", colors: ["白", "黃", "紅", "藍"] },
-  { name: "風信子", colors: ["白", "黃", "紅", "藍"] },
-  { name: "繡球花", colors: ["白", "紅", "藍"] },
-  { name: "鳶尾花", colors: ["白", "黃", "紅", "藍"] },
-  { name: "百合", colors: ["白", "黃", "紅"] },
-  { name: "萬壽菊", colors: ["白", "黃", "紅"] },
-  { name: "牽牛花", colors: ["白", "黃", "紅", "藍"] },
-  { name: "蝴蝶蘭", colors: ["白", "黃", "紅", "藍"] },
-  { name: "水仙花", colors: ["白", "黃"] },
+  { name: "風鈴草", subtitle: "6月新花・目前無法獲得", colors: ["紅", "藍"], locked: true },
+  { name: "勿忘草", colors: ["黃", "紅", "藍"] },
+  { name: "週年玫瑰", colors: ["黃", "紅", "藍"] },
+  { name: "銀蓮花", colors: ["黃", "紅", "藍"] },
+  { name: "九重葛", colors: ["黃", "紅", "藍"] },
+  { name: "海芋", colors: ["黃", "紅", "藍"] },
+  { name: "山茶花", colors: ["黃", "紅", "藍"] },
+  { name: "油菜花", colors: ["黃", "藍"] },
+  { name: "康乃馨", colors: ["黃", "紅", "藍"] },
+  { name: "嘉德麗雅蘭", colors: ["黃", "紅", "藍"] },
+  { name: "雞冠花", colors: ["黃", "紅", "藍"] },
+  { name: "櫻花", colors: [] },
+  { name: "菊花", colors: ["黃", "紅", "藍"] },
+  { name: "鐵線蓮", colors: ["黃", "紅", "藍"] },
+  { name: "彼岸花", colors: ["黃", "紅"] },
+  { name: "鈴蘭", colors: ["紅"] },
+  { name: "大波斯菊", colors: ["黃", "紅"] },
+  { name: "兔耳花", colors: ["紅", "藍"] },
+  { name: "大理花", colors: ["黃", "紅", "藍"] },
+  { name: "石竹", colors: ["紅", "藍"] },
+  { name: "小蒼蘭", colors: ["黃", "紅", "藍"] },
+  { name: "龍膽", colors: ["紅", "藍"] },
+  { name: "聖誕玫瑰", colors: ["黃", "紅", "藍"] },
+  { name: "扶桑花", colors: ["黃", "紅", "藍"] },
+  { name: "風信子", colors: ["黃", "紅", "藍"] },
+  { name: "繡球花", colors: ["紅", "藍"] },
+  { name: "鳶尾花", colors: ["黃", "紅", "藍"] },
+  { name: "百合", colors: ["黃", "紅"] },
+  { name: "萬壽菊", colors: ["黃", "紅"] },
+  { name: "牽牛花", colors: ["黃", "紅", "藍"] },
+  { name: "蝴蝶蘭", colors: ["黃", "紅", "藍"] },
+  { name: "水仙花", colors: ["黃"] },
   { name: "粉蝶花", colors: ["藍"] },
-  { name: "睡蓮", colors: ["白", "黃", "紅", "藍"] },
-  { name: "三色堇", colors: ["白", "黃", "紅", "藍"] },
-  { name: "牡丹", colors: ["白", "黃", "紅", "藍"] },
-  { name: "矮牽牛", colors: ["白", "黃", "紅", "藍"] },
-  { name: "梅花", colors: ["白", "黃", "紅"] },
-  { name: "雞蛋花", colors: ["白", "黃", "紅"] },
-  { name: "聖誕紅", colors: ["白", "黃", "紅", "藍"] },
-  { name: "櫻草花", colors: ["白", "黃", "紅", "藍"] },
-  { name: "玫瑰", colors: ["白", "黃", "紅", "藍"] },
-  { name: "鼠尾草", colors: ["白", "黃", "紅", "藍"] },
-  { name: "金魚草", colors: ["白", "黃", "紅", "藍"] },
-  { name: "雪花蓮", colors: ["白", "黃", "紅"] },
-  { name: "天堂鳥", colors: ["白", "黃", "紅"] },
+  { name: "睡蓮", colors: ["黃", "紅", "藍"] },
+  { name: "三色堇", colors: ["黃", "紅", "藍"] },
+  { name: "牡丹", colors: ["黃", "紅", "藍"] },
+  { name: "矮牽牛", colors: ["黃", "紅", "藍"] },
+  { name: "梅花", colors: ["黃", "紅"] },
+  { name: "雞蛋花", colors: ["黃", "紅"] },
+  { name: "聖誕紅", colors: ["黃", "紅", "藍"] },
+  { name: "櫻草花", colors: ["黃", "紅", "藍"] },
+  { name: "玫瑰", colors: ["黃", "紅", "藍"] },
+  { name: "鼠尾草", colors: ["黃", "紅", "藍"] },
+  { name: "金魚草", colors: ["黃", "紅", "藍"] },
+  { name: "雪花蓮", colors: ["黃", "紅"] },
+  { name: "天堂鳥", colors: ["黃", "紅"] },
   { name: "向日葵", colors: ["黃"] },
-  { name: "豌豆花", colors: ["白", "黃", "紅", "藍"] },
-  { name: "鬱金香", colors: ["白", "黃", "紅", "藍"] },
-  { name: "鸚鵡鬱金香", colors: ["白", "黃", "紅", "藍"] }
+  { name: "豌豆花", colors: ["黃", "紅", "藍"] },
+  { name: "鬱金香", colors: ["黃", "紅", "藍"] },
+  { name: "鸚鵡鬱金香", colors: ["黃", "紅", "藍"] }
 ];
 
 
@@ -242,7 +242,7 @@ function buildTimeOptions() {
 
 
 function getWishColorOptions(baseColors) {
-  const colors = Array.isArray(baseColors) && baseColors.length ? baseColors.slice() : ["白", "黃", "紅", "藍"];
+  const colors = Array.isArray(baseColors) && baseColors.length ? baseColors.slice() : ["黃", "紅", "藍"];
   const uniqueColors = colors.filter(function (color, index) { return colors.indexOf(color) === index; });
   if (uniqueColors.length >= 2) {
     if (!uniqueColors.includes("混色")) uniqueColors.push("混色");
@@ -256,7 +256,8 @@ function getWishColorLabel(color) {
 }
 
 function buildWishFlowerName(color, flowerName) {
-  if (!flowerName || !color) return "";
+  if (!flowerName) return "";
+  if (!color) return flowerName;
   return getWishColorLabel(color) + flowerName;
 }
 
@@ -268,7 +269,7 @@ function initFlowerPicker() {
 
   if (!comboInput || !colorSelect || !flowerInput) return;
 
-  const allColors = ["白", "黃", "紅", "藍"];
+  const allColors = ["黃", "紅", "藍"];
 
   function normalizeText(value) {
     return String(value || "").trim().toLowerCase();
@@ -672,7 +673,30 @@ async function addWish() {
   document.getElementById("messageInput").value = "";
   saveData();
   renderAll();
+  alert("已成功送出許願 🌸");
 }
+
+
+function showSuccessToast(message) {
+  const toast = document.createElement("div");
+  toast.className = "success-toast";
+  toast.textContent = message;
+
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(function () {
+    toast.classList.add("show");
+  });
+
+  setTimeout(function () {
+    toast.classList.remove("show");
+
+    setTimeout(function () {
+      toast.remove();
+    }, 300);
+  }, 2200);
+}
+
 
 function openConfirmModal(id) {
   selectedWishId = id;
@@ -2675,6 +2699,8 @@ async function startFirebaseSync() {
 
     await addDoc(wishesRef, newWish);
 
+    alert("已成功送出許願 🌸");
+
     document.getElementById("flowerInput").value = "";
     if (document.getElementById("messageInput")) {
       document.getElementById("messageInput").value = "";
@@ -3248,7 +3274,7 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
     if (input.dataset.deployDropdownFixed === "1") return;
     input.dataset.deployDropdownFixed = "1";
 
-    const defaultColors = ["白", "黃", "紅", "藍"];
+    const defaultColors = ["黃", "紅", "藍"];
 
     function findFlower(name) {
       const key = normalizeFlowerText(name);
@@ -3279,15 +3305,29 @@ window.updateCurrentNicknameBar = updateCurrentNicknameBar;
         hiddenInput.value = "";
         return;
       }
-      const colors = getWishColorOptions(found && Array.isArray(found.colors) && found.colors.length ? found.colors : defaultColors);
+      const baseFlowerColors = found && Array.isArray(found.colors) ? found.colors : [];
+      const colors = getWishColorOptions(baseFlowerColors.length ? baseFlowerColors : defaultColors);
+
       colorSelect.innerHTML = "";
-      colors.forEach(function (color) {
+
+      if (baseFlowerColors.length <= 1) {
+        colorSelect.style.display = "none";
         const option = document.createElement("option");
-        option.value = color;
-        option.textContent = getWishColorLabel(color);
+        option.value = "";
+        option.textContent = "單色花";
         colorSelect.appendChild(option);
-      });
-      if (colors.includes(current)) colorSelect.value = current;
+      } else {
+        colorSelect.style.display = "";
+        colors.forEach(function (color) {
+          const option = document.createElement("option");
+          option.value = color;
+          option.textContent = getWishColorLabel(color);
+          colorSelect.appendChild(option);
+        });
+
+        if (colors.includes(current)) colorSelect.value = current;
+      }
+
       updateHiddenValue();
     }
 
